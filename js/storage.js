@@ -9,6 +9,7 @@ function defaultSave() {
     best: {},          // stageId -> { accuracy, wpm }
     seenTutorial: false,
     settings: { sound: true, speed: 1 },
+    garden: { plantedCount: 0, wordsCompleted: 0, totalMistakes: 0, lapsCompleted: 0 },
   };
 }
 
@@ -19,6 +20,7 @@ function loadSave() {
     const parsed = JSON.parse(raw);
     const merged = Object.assign(defaultSave(), parsed);
     merged.settings = Object.assign(defaultSave().settings, parsed.settings);
+    merged.garden = Object.assign(defaultSave().garden, parsed.garden);
     return merged;
   } catch (e) {
     return defaultSave();

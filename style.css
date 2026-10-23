@@ -273,6 +273,203 @@ html, body {
 }
 @keyframes poof { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(1.6); } }
 
+/* ---------- Garden Mode ---------- */
+#screen-garden { padding: 0; }
+#garden-hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.75);
+  z-index: 5;
+  font-weight: bold;
+  gap: 10px;
+}
+.garden-meter-wrap { flex: 1; justify-content: center; max-width: 360px; margin: 0 auto; }
+.growth-meter {
+  width: 220px;
+  height: 16px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #ddd;
+}
+.growth-meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #8bd17c, var(--teal));
+  transition: width 0.3s ease;
+}
+
+#gardenArea {
+  position: relative;
+  z-index: 0; /* establishes a stacking context so z-index:-1 children stay contained here, not escape to the page root */
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 85% 10%, #fff6c8 0%, #ffe9a8 35%, transparent 45%),
+    linear-gradient(to bottom, #8fd1ff 0%, #bfe8ff 26%, #eafff0 52%, #bfe6a0 54%, #8fcf72 100%);
+}
+
+/* decorative sky elements */
+.garden-sun {
+  position: absolute;
+  top: 36px; right: 48px;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffbe0, #ffd95e 70%, #ffc53d);
+  box-shadow: 0 0 30px 10px rgba(255, 220, 130, 0.6);
+  z-index: -1;
+}
+.garden-cloud {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.85;
+  z-index: -1;
+  animation: driftCloud 40s linear infinite;
+}
+.garden-cloud.c1 { top: 60px; left: -60px; }
+.garden-cloud.c2 { top: 110px; left: -60px; animation-duration: 55s; animation-delay: -20s; font-size: 1.5rem; }
+@keyframes driftCloud { from { transform: translateX(0); } to { transform: translateX(120vw); } }
+
+/* climbing vines along the edges */
+.garden-vine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: -1;
+  opacity: 0.9;
+}
+.garden-vine svg { width: 100%; height: 100%; }
+.garden-vine.left { left: 0; }
+.garden-vine.right { right: 0; }
+
+/* scattered ambient decorations, pinned around the edges so the center
+   stays clear for the growable plot grid */
+.garden-deco {
+  position: absolute;
+  font-size: 1.6rem;
+  z-index: -1;
+  opacity: 0.9;
+  pointer-events: none;
+}
+.garden-deco.d1 { top: 130px; left: 18%; animation: flutter 7s ease-in-out infinite; }
+.garden-deco.d2 { top: 160px; right: 20%; font-size: 1.4rem; animation: flutter 6s ease-in-out infinite reverse; }
+.garden-deco.corner { font-size: 2.6rem; opacity: 0.95; }
+.garden-deco.tl { top: 74px; left: 6px; }
+.garden-deco.tr { top: 74px; right: 6px; }
+.garden-deco.bl { bottom: 56px; left: 2px; font-size: 2.2rem; }
+.garden-deco.br { bottom: 56px; right: 10px; font-size: 2rem; }
+@keyframes flutter {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -8px) rotate(8deg); }
+  50% { transform: translate(-6px, -14px) rotate(-6deg); }
+  75% { transform: translate(8px, -4px) rotate(4deg); }
+}
+
+/* the growable garden: flower spots scattered organically across the
+   whole screen (not a rigid spreadsheet grid). Positions are computed in
+   JS with randomized jitter around a coarse layout, so it reads as an
+   open lawn with planting spots rather than a filled box. */
+.garden-grid {
+  position: absolute;
+  top: 70px;
+  left: 68px;
+  right: 68px;
+  bottom: 62px;
+  z-index: 1;
+  transition: filter 0.3s ease;
+}
+.garden-grid.wither-flash { filter: drop-shadow(0 0 10px rgba(255, 90, 90, 0.8)); }
+
+.garden-slot {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.garden-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(74, 48, 24, 0.45);
+  box-shadow: 0 0 0 3px rgba(74, 48, 24, 0.12);
+  transition: opacity 0.25s ease;
+}
+.garden-slot.filled .garden-dot { opacity: 0; }
+
+.garden-plant {
+  position: relative;
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,0.25));
+  transform: scale(0);
+  transition: transform 0.2s ease-out;
+}
+.garden-slot.filled .garden-plant { transform: scale(1); }
+.garden-plant.just-planted { animation: bloomPop 0.4s ease; }
+@keyframes bloomPop { 0% { transform: scale(0.3); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+.garden-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: 70px;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 1.9rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: rgba(255,255,255,0.92);
+  padding: 12px 26px;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+  white-space: nowrap;
+}
+.garden-prompt .typed { color: var(--teal); }
+.garden-prompt .remaining { color: var(--ink); }
+.garden-prompt.garden-shake { animation: shake 0.3s ease; }
+
+.garden-fence {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 56px;
+  z-index: -1;
+  opacity: 0.95;
+  background-image:
+    repeating-linear-gradient(90deg, #8a5a2d 0 9px, transparent 9px 46px),
+    linear-gradient(#c99a62, #c99a62),
+    linear-gradient(#c99a62, #c99a62);
+  background-size: 100% 100%, 100% 9px, 100% 9px;
+  background-position: 0 0, 0 12px, 0 32px;
+  background-repeat: repeat-x, no-repeat, no-repeat;
+  border-top: 3px solid #6e4423;
+}
+
+.garden-banner {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff3cf;
+  border: 2px solid var(--yellow);
+  border-radius: 14px;
+  padding: 10px 18px;
+  font-weight: bold;
+  text-align: center;
+  max-width: 90%;
+  z-index: 6;
+  transition: opacity 0.4s ease;
+}
+.garden-banner.hidden { opacity: 0; pointer-events: none; }
+
 #targetHint {
   position: absolute;
   bottom: 70px;

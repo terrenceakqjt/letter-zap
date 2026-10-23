@@ -10,8 +10,8 @@ const UI = (() => {
 
   function cache() {
     [
-      'screen-home', 'screen-tutorial', 'screen-map', 'screen-game', 'screen-complete',
-      'btn-start', 'btn-map', 'btn-tutorial', 'btn-sound-toggle',
+      'screen-home', 'screen-tutorial', 'screen-map', 'screen-game', 'screen-complete', 'screen-garden',
+      'btn-start', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
       'tutorial-steps', 'tutorial-back', 'tutorial-next',
       'map-list', 'map-back',
       'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider',
@@ -20,6 +20,8 @@ const UI = (() => {
       'complete-retry', 'complete-next', 'complete-home',
       'overlay-keyintro', 'keyintro-heading', 'keyintro-diagrams', 'keyintro-text', 'keyintro-ready',
       'overlay-pause', 'pause-resume', 'pause-quit',
+      'garden-back', 'garden-reset', 'gardenGrid', 'gardenPrompt', 'gardenBanner',
+      'garden-meter-fill', 'garden-growth-text', 'garden-words', 'garden-mistakes',
     ].forEach((id) => { el[id] = document.getElementById(id); });
   }
 
@@ -118,6 +120,18 @@ const UI = (() => {
     Game.startStage(stage, index);
   }
 
+  // ---------------- Garden Mode ----------------
+  function enterGarden() {
+    showScreen('screen-garden');
+    const pool = wordPoolForProgress(save.unlockedStage);
+    GardenGame.start(pool, save.garden);
+  }
+
+  function updateGardenHud(state) {
+    save.garden = state;
+    writeSave(save);
+  }
+
   function updateHud({ stats, accuracy, lives, livesInfinite }) {
     el['hud-score'].textContent = `⭐ ${stats.zapped}`;
     el['hud-accuracy'].textContent = `🎯 ${accuracy}%`;
@@ -192,6 +206,10 @@ const UI = (() => {
     el['btn-tutorial'].addEventListener('click', () => { playClick(); renderTutorial(); showScreen('screen-tutorial'); });
     el['map-back'].addEventListener('click', () => { playClick(); showScreen('screen-home'); });
 
+    el['btn-garden'].addEventListener('click', () => { playClick(); enterGarden(); });
+    el['garden-back'].addEventListener('click', () => { playClick(); GardenGame.stop(); showScreen('screen-home'); });
+    el['garden-reset'].addEventListener('click', () => { playClick(); GardenGame.reset(); });
+
     el['tutorial-back'].addEventListener('click', () => { playClick(); showTutStep(tutStepIndex - 1); });
     el['tutorial-next'].addEventListener('click', () => {
       playClick();
@@ -246,12 +264,20 @@ const UI = (() => {
     el['complete-home'].addEventListener('click', () => { playClick(); showScreen('screen-home'); });
 
     document.addEventListener('keydown', (e) => {
-      if (!el['screen-game'].classList.contains('active')) return;
-      if (!el['overlay-keyintro'].classList.contains('hidden')) return;
-      if (!el['overlay-pause'].classList.contains('hidden')) return;
+      const gameActive = el['screen-game'].classList.contains('active');
+      const gardenActive = el['screen-garden'].classList.contains('active');
+      if (!gameActive && !gardenActive) return;
+      if (gameActive) {
+        if (!el['overlay-keyintro'].classList.contains('hidden')) return;
+        if (!el['overlay-pause'].classList.contains('hidden')) return;
+      }
       if (e.repeat) return;
       if (e.key.length === 1) e.preventDefault();
-      Game.handleKey(e.key);
+      if (gameActive) {
+        Game.handleKey(e.key);
+      } else {
+        GardenGame.handleKey(e.key);
+      }
     });
   }
 
@@ -268,6 +294,16 @@ const UI = (() => {
       onStageEnd,
     });
     Game.setSpeedMultiplier(save.settings.speed);
+    GardenGame.init({
+      gridEl: el['gardenGrid'],
+      promptEl: el['gardenPrompt'],
+      bannerEl: el['gardenBanner'],
+      meterFillEl: el['garden-meter-fill'],
+      meterTextEl: el['garden-growth-text'],
+      wordsEl: el['garden-words'],
+      mistakesEl: el['garden-mistakes'],
+      hudCallbacks: { onUpdate: updateGardenHud },
+    });
     wire();
     showScreen('screen-home');
   }

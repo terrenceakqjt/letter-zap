@@ -52,5 +52,11 @@ const SFX = (() => {
     wordComplete() {
       [660, 880].forEach((f, i) => tone({ freq: f, duration: 0.12, type: 'sine', gain: 0.13, delay: i * 0.07 }));
     },
+    wither() {
+      tone({ freq: 320, sweepTo: 140, duration: 0.35, type: 'triangle', gain: 0.09 });
+    },
+    bloomFull() {
+      [523, 659, 784, 988, 1318].forEach((f, i) => tone({ freq: f, duration: 0.22, type: 'sine', gain: 0.13, delay: i * 0.08 }));
+    },
   };
 })();

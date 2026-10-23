@@ -19,6 +19,7 @@
       <div class="home-buttons">
         <button id="btn-start" class="big-btn primary">▶ Start Playing</button>
         <button id="btn-map" class="big-btn">🗺 Choose a Level</button>
+        <button id="btn-garden" class="big-btn">🌼 Garden Mode</button>
         <button id="btn-tutorial" class="big-btn">📖 Home Row Lesson</button>
       </div>
       <button id="btn-sound-toggle" class="icon-btn" title="Toggle sound">🔊</button>
@@ -43,6 +44,71 @@
       <h2>Choose a Level 🗺</h2>
       <div id="map-list" class="map-list"></div>
       <button id="map-back" class="big-btn">⬅ Back to Home</button>
+    </div>
+  </section>
+
+  <!-- ============ GARDEN MODE SCREEN ============ -->
+  <section id="screen-garden" class="screen">
+    <div id="garden-hud">
+      <div class="hud-left">
+        <button id="garden-back" class="hud-btn">⬅ Home</button>
+      </div>
+      <div class="hud-mid garden-meter-wrap">
+        <div class="growth-meter"><div id="garden-meter-fill" class="growth-meter-fill"></div></div>
+        <span id="garden-growth-text">0%</span>
+      </div>
+      <div class="hud-right">
+        <span id="garden-words">🌼 0</span>
+        <span id="garden-mistakes">✋ 0</span>
+        <button id="garden-reset" class="hud-btn">🌱 New Garden</button>
+      </div>
+    </div>
+    <div id="gardenArea">
+      <div class="garden-sun" aria-hidden="true"></div>
+      <div class="garden-cloud c1" aria-hidden="true">☁️</div>
+      <div class="garden-cloud c2" aria-hidden="true">☁️</div>
+      <div class="garden-vine left" aria-hidden="true">
+        <svg viewBox="0 0 60 600" preserveAspectRatio="none">
+          <path d="M30 0 C 10 40, 50 80, 30 120 S 10 200, 30 240 S 50 320, 30 360 S 10 440, 30 480 S 50 560, 30 600"
+                fill="none" stroke="#3f8d46" stroke-width="5"/>
+          <circle cx="12" cy="30" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="95" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="155" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="215" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="275" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="335" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="395" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="455" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="515" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="570" r="9" fill="#5caa58"/>
+        </svg>
+      </div>
+      <div class="garden-vine right" aria-hidden="true">
+        <svg viewBox="0 0 60 600" preserveAspectRatio="none">
+          <path d="M30 0 C 50 40, 10 80, 30 120 S 50 200, 30 240 S 10 320, 30 360 S 50 440, 30 480 S 10 560, 30 600"
+                fill="none" stroke="#3f8d46" stroke-width="5"/>
+          <circle cx="48" cy="30" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="95" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="155" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="215" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="275" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="335" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="395" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="455" r="9" fill="#6fbf6b"/>
+          <circle cx="48" cy="515" r="9" fill="#5caa58"/>
+          <circle cx="12" cy="570" r="9" fill="#6fbf6b"/>
+        </svg>
+      </div>
+      <div class="garden-deco d1" aria-hidden="true">🦋</div>
+      <div class="garden-deco d2" aria-hidden="true">🐝</div>
+      <div class="garden-deco corner tl" aria-hidden="true">🌳</div>
+      <div class="garden-deco corner tr" aria-hidden="true">🌳</div>
+      <div class="garden-deco corner bl" aria-hidden="true">⛲</div>
+      <div class="garden-deco corner br" aria-hidden="true">🪑</div>
+      <div id="gardenBanner" class="garden-banner hidden"></div>
+      <div id="gardenGrid" class="garden-grid"></div>
+      <div id="gardenPrompt" class="garden-prompt"></div>
+      <div class="garden-fence" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -112,6 +178,7 @@
 <script src="js/storage.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/game.js"></script>
+<script src="js/garden.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
 </body>

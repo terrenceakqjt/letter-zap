@@ -81,6 +81,7 @@ function buildStages() {
         reviewKeys: reviewPool.slice(-6), // sprinkle in recent keys, not the whole history
         minReps: Math.max(16, bp.newKeys.length * 10),
         minAccuracy: 0.8,
+        cumulativeLetters: unlocked.slice(),
       });
     } else if (bp.kind === 'review') {
       stages.push({
@@ -93,6 +94,7 @@ function buildStages() {
         reviewKeys: [],
         minReps: Math.min(30, unlocked.length * 3),
         minAccuracy: 0.8,
+        cumulativeLetters: unlocked.slice(),
       });
     } else if (bp.kind === 'words') {
       const pool = wordsFor(unlocked, bp.minLen, bp.maxLen);
@@ -105,6 +107,7 @@ function buildStages() {
         wordPool: pool.length ? pool : wordsFor(unlocked, bp.minLen, bp.maxLen + 3),
         minReps: Math.min(14, Math.max(8, pool.length)),
         minAccuracy: 0.75,
+        cumulativeLetters: unlocked.slice(),
       });
     } else if (bp.kind === 'endless') {
       const pool = wordsFor(unlocked, 3, 9);
@@ -117,6 +120,7 @@ function buildStages() {
         wordPool: pool,
         minReps: 0,
         minAccuracy: 0,
+        cumulativeLetters: unlocked.slice(),
       });
     }
   }
@@ -124,3 +128,16 @@ function buildStages() {
 }
 
 const STAGES = buildStages();
+
+/**
+ * Word pool matching whatever letters the player has unlocked by the given
+ * stage index — used by modes (like the Garden) that want age/skill-
+ * appropriate words without being tied to the stage-passing curriculum.
+ */
+function wordPoolForProgress(stageIndex) {
+  const idx = Math.max(0, Math.min(STAGES.length - 1, stageIndex));
+  const letters = STAGES[idx].cumulativeLetters;
+  if (!letters || letters.length === 0) return wordsFor(HOME_ROW_KEYS, 2, 5);
+  const pool = wordsFor(letters, 3, 6);
+  return pool.length ? pool : wordsFor(letters, 2, 8);
+}
