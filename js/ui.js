@@ -14,13 +14,13 @@ const UI = (() => {
       'btn-start', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
       'tutorial-steps', 'tutorial-back', 'tutorial-next',
       'map-list', 'map-back',
-      'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider',
+      'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider', 'game-back',
       'gameArea', 'cannon', 'targetHint',
       'complete-title', 'complete-stars', 'complete-stats',
       'complete-retry', 'complete-next', 'complete-home',
       'overlay-keyintro', 'keyintro-heading', 'keyintro-diagrams', 'keyintro-text', 'keyintro-ready',
       'overlay-pause', 'pause-resume', 'pause-quit',
-      'garden-back', 'garden-reset', 'gardenGrid', 'gardenPrompt', 'gardenBanner',
+      'garden-back', 'garden-reset', 'gardenGrid', 'gardenPrompt', 'gardenBanner', 'gardenLandmarks',
       'garden-meter-fill', 'garden-growth-text', 'garden-words', 'garden-mistakes',
     ].forEach((id) => { el[id] = document.getElementById(id); });
   }
@@ -238,6 +238,11 @@ const UI = (() => {
       Game.pause();
       el['overlay-pause'].classList.remove('hidden');
     });
+    el['game-back'].addEventListener('click', () => {
+      playClick();
+      Game.stop();
+      showScreen('screen-home');
+    });
     el['btn-skip'].addEventListener('click', () => {
       playClick();
       Game.stop();
@@ -298,6 +303,7 @@ const UI = (() => {
       gridEl: el['gardenGrid'],
       promptEl: el['gardenPrompt'],
       bannerEl: el['gardenBanner'],
+      landmarksEl: el['gardenLandmarks'],
       meterFillEl: el['garden-meter-fill'],
       meterTextEl: el['garden-growth-text'],
       wordsEl: el['garden-words'],

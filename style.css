@@ -310,8 +310,8 @@ html, body {
   height: 100%;
   overflow: hidden;
   background:
-    radial-gradient(circle at 85% 10%, #fff6c8 0%, #ffe9a8 35%, transparent 45%),
-    linear-gradient(to bottom, #8fd1ff 0%, #bfe8ff 26%, #eafff0 52%, #bfe6a0 54%, #8fcf72 100%);
+    radial-gradient(circle at 85% 10%, #fff3e0 0%, #ffe0c4 35%, transparent 45%),
+    linear-gradient(to bottom, #aed4e8 0%, #d8e9ea 22%, #f3e3e6 48%, #d7e6c8 54%, #a9cf96 100%);
 }
 
 /* decorative sky elements */
@@ -356,19 +356,103 @@ html, body {
   z-index: -1;
   opacity: 0.9;
   pointer-events: none;
+  filter: drop-shadow(2px 5px 2px rgba(0,0,0,0.25));
 }
 .garden-deco.d1 { top: 130px; left: 18%; animation: flutter 7s ease-in-out infinite; }
 .garden-deco.d2 { top: 160px; right: 20%; font-size: 1.4rem; animation: flutter 6s ease-in-out infinite reverse; }
 .garden-deco.corner { font-size: 2.6rem; opacity: 0.95; }
+.garden-deco.corner::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -4px;
+  width: 70%; height: 10px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3), transparent 72%);
+  transform: translateX(-50%);
+  z-index: -1;
+}
 .garden-deco.tl { top: 74px; left: 6px; }
 .garden-deco.tr { top: 74px; right: 6px; }
-.garden-deco.bl { bottom: 56px; left: 2px; font-size: 2.2rem; }
-.garden-deco.br { bottom: 56px; right: 10px; font-size: 2rem; }
+.garden-deco.bl { bottom: 60px; left: 2px; font-size: 2.2rem; }
+.garden-deco.br { bottom: 60px; right: 10px; font-size: 2rem; }
 @keyframes flutter {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
   25% { transform: translate(10px, -8px) rotate(8deg); }
   50% { transform: translate(-6px, -14px) rotate(-6deg); }
   75% { transform: translate(8px, -4px) rotate(4deg); }
+}
+
+/* a clipped hedge line along the horizon, framing the lawn like a formal
+   garden border — bumpy top edge made from a tiled radial-gradient, solid
+   green body beneath */
+.garden-hedge {
+  position: absolute;
+  left: 0; right: 0;
+  top: calc(54% - 18px);
+  height: 36px;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle at 50% 2px, #5cc260 15px, transparent 16px),
+    linear-gradient(#4caf50, #3d8b40);
+  background-size: 28px 36px, 100% 22px;
+  background-position: 0 0, 0 16px;
+  background-repeat: repeat-x, no-repeat;
+  border-bottom: 2px solid #2e6b30;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* individual bush clusters — three overlapping blobs for a rounded,
+   hand-trimmed look, scattered near the hedge line and along the lawn */
+.garden-bush {
+  position: absolute;
+  width: 52px;
+  height: 34px;
+  z-index: -1;
+  background-image:
+    radial-gradient(circle at 28% 65%, #5cc260 0 16px, transparent 17px),
+    radial-gradient(circle at 68% 60%, #4caf50 0 17px, transparent 18px),
+    radial-gradient(circle at 48% 42%, #70cc73 0 14px, transparent 15px);
+  filter: drop-shadow(1px 5px 2px rgba(0,0,0,0.25));
+}
+.garden-bush.b1 { top: calc(54% + 10px); left: 12%; }
+.garden-bush.b2 { top: calc(54% + 18px); left: 32%; width: 40px; height: 26px; }
+.garden-bush.b3 { top: calc(54% + 10px); right: 28%; }
+.garden-bush.b4 { top: calc(54% + 22px); right: 10%; width: 44px; height: 28px; }
+.garden-bush.b5 { bottom: 110px; left: 50%; transform: translateX(-50%); width: 46px; height: 30px; }
+
+/* big milestone landmarks — one appears every 100 lifetime words, placed
+   at a stable (deterministic, not re-randomized) spot so the garden
+   builds a lasting sense of history rather than just small flowers. They
+   persist across round resets; only an explicit "New Garden" clears them. */
+.garden-landmarks {
+  position: absolute;
+  top: 56%;
+  left: 68px;
+  right: 68px;
+  bottom: 62px;
+  z-index: 0;
+  pointer-events: none;
+}
+.garden-landmark {
+  position: absolute;
+  font-size: 3.4rem;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(2px 7px 3px rgba(0,0,0,0.3));
+}
+.garden-landmark::after {
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -6px;
+  width: 60px; height: 14px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3), transparent 72%);
+  transform: translateX(-50%);
+  z-index: -1;
+}
+.garden-landmark.just-added { animation: landmarkPop 0.7s ease; }
+@keyframes landmarkPop {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-8deg); }
+  55% { transform: translate(-50%, -50%) scale(1.25) rotate(4deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
 }
 
 /* the growable garden: flower spots scattered organically across the
@@ -377,7 +461,7 @@ html, body {
    open lawn with planting spots rather than a filled box. */
 .garden-grid {
   position: absolute;
-  top: 70px;
+  top: 56%;
   left: 68px;
   right: 68px;
   bottom: 62px;
@@ -394,6 +478,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  --depth-scale: 1;
 }
 .garden-dot {
   position: absolute;
@@ -406,17 +491,38 @@ html, body {
 }
 .garden-slot.filled .garden-dot { opacity: 0; }
 
+/* soft ground shadow beneath each flower, so it reads as sitting ON the
+   lawn rather than floating flat against it */
+.garden-slot::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  width: 22px;
+  height: 7px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.32), transparent 72%);
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.2s ease-out;
+}
+.garden-slot.filled::after { transform: translateX(-50%) scale(var(--depth-scale, 1)); }
+
 .garden-plant {
   position: relative;
   font-size: 2rem;
   line-height: 1;
-  filter: drop-shadow(0 3px 2px rgba(0,0,0,0.25));
+  filter: drop-shadow(1px 4px 2px rgba(0,0,0,0.3));
   transform: scale(0);
   transition: transform 0.2s ease-out;
 }
-.garden-slot.filled .garden-plant { transform: scale(1); }
+/* plants placed lower on screen read as "closer" and render a little
+   bigger — a cheap perspective/depth cue since there's no real 3D here */
+.garden-slot.filled .garden-plant { transform: scale(var(--depth-scale, 1)); }
 .garden-plant.just-planted { animation: bloomPop 0.4s ease; }
-@keyframes bloomPop { 0% { transform: scale(0.3); } 60% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@keyframes bloomPop {
+  0% { transform: scale(0); }
+  60% { transform: scale(calc(var(--depth-scale, 1) * 1.3)); }
+  100% { transform: scale(var(--depth-scale, 1)); }
+}
 
 .garden-prompt {
   position: absolute;
@@ -437,6 +543,7 @@ html, body {
 .garden-prompt .remaining { color: var(--ink); }
 .garden-prompt.garden-shake { animation: shake 0.3s ease; }
 
+/* bamboo fence: vertical bamboo-pole stripes bound by two dark rope ties */
 .garden-fence {
   position: absolute;
   left: 0; right: 0; bottom: 0;
@@ -444,13 +551,14 @@ html, body {
   z-index: -1;
   opacity: 0.95;
   background-image:
-    repeating-linear-gradient(90deg, #8a5a2d 0 9px, transparent 9px 46px),
-    linear-gradient(#c99a62, #c99a62),
-    linear-gradient(#c99a62, #c99a62);
-  background-size: 100% 100%, 100% 9px, 100% 9px;
-  background-position: 0 0, 0 12px, 0 32px;
+    repeating-linear-gradient(90deg, #c2a455 0 11px, transparent 11px 34px),
+    linear-gradient(#3a2f1a, #3a2f1a),
+    linear-gradient(#3a2f1a, #3a2f1a);
+  background-size: 100% 100%, 100% 5px, 100% 5px;
+  background-position: 0 0, 0 16px, 0 36px;
   background-repeat: repeat-x, no-repeat, no-repeat;
-  border-top: 3px solid #6e4423;
+  border-top: 3px solid #7a5f28;
+  box-shadow: 0 -8px 10px -6px rgba(0,0,0,0.25);
 }
 
 .garden-banner {
@@ -469,6 +577,20 @@ html, body {
   transition: opacity 0.4s ease;
 }
 .garden-banner.hidden { opacity: 0; pointer-events: none; }
+.garden-banner.celebrate {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  padding: 16px 28px;
+  background: #fff8e1;
+  border: 3px solid var(--yellow);
+  box-shadow: 0 0 0 5px rgba(255, 209, 102, 0.35), 0 10px 0 rgba(0,0,0,0.15);
+  animation: bannerCelebrate 0.5s ease;
+}
+@keyframes bannerCelebrate {
+  0% { transform: translateX(-50%) scale(0.6) rotate(-3deg); }
+  60% { transform: translateX(-50%) scale(1.1) rotate(2deg); }
+  100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+}
 
 #targetHint {
   position: absolute;

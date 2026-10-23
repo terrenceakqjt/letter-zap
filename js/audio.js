@@ -58,5 +58,9 @@ const SFX = (() => {
     bloomFull() {
       [523, 659, 784, 988, 1318].forEach((f, i) => tone({ freq: f, duration: 0.22, type: 'sine', gain: 0.13, delay: i * 0.08 }));
     },
+    landmark() {
+      [392, 523, 659, 784, 988, 784, 988, 1175].forEach((f, i) =>
+        tone({ freq: f, duration: 0.2, type: 'triangle', gain: 0.13, delay: i * 0.07 }));
+    },
   };
 })();

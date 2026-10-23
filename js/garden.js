@@ -16,16 +16,30 @@
  */
 
 const GardenGame = (() => {
-  const BLOOM_PALETTE = ['🌻', '🌸', '🌹', '🌼', '🌺', '🌷', '🏵️'];
-  const COARSE_CELL = 110;   // spacing basis for the jittered layout
+  const BLOOM_PALETTE = ['🌸', '🪷', '💮', '⚘', '🏵️'];
+  // Big permanent rewards for fully filling the garden — Japanese garden
+  // landmarks and animals, so each completed round adds something
+  // substantial and visible, not just a reset.
+  const LANDMARK_POOL = ['⛩️', '🎋', '🏮', '🐢', '🍁', '🗻', '🪷', '🦆', '🏯'];
+  const LANDMARK_NAMES = {
+    '⛩️': 'torii gate', '🎋': 'bamboo grove', '🏮': 'paper lantern', '🐢': 'turtle',
+    '🍁': 'maple tree', '🗻': 'view of Mt. Fuji', '🪷': 'lotus pond', '🦆': 'duck', '🏯': 'pagoda',
+  };
+  const COARSE_CELL = 220;   // spacing basis for the jittered layout — wider
+                              // spacing means ~1/4 as many plots per screen,
+                              // so a full garden takes ~1/4 as many words
   const JITTER_RATIO = 0.32; // how far a plot can wander from its grid point
   const MAX_SLOTS = 160;
   const WITHER_STREAK = 3;
 
-  let gridEl, promptEl, bannerEl, meterFillEl, meterTextEl, wordsEl, mistakesEl;
+  let gridEl, promptEl, bannerEl, meterFillEl, meterTextEl, wordsEl, mistakesEl, landmarksEl;
   let hudCallbacks = {};
   let slotEls = [];
   let plantedFlower = []; // per-slot: emoji string once planted, else null
+  let plantOrder = [];    // shuffled slot indices — planting fills this sequence,
+                           // so flowers scatter across the whole bed instead of
+                           // filling row by row from the top
+  let landmarkEls = [];   // big milestone structures, one per fully-completed garden round
 
   let wordPool = ['cat'];
   let currentWord = '';
@@ -48,6 +62,7 @@ const GardenGame = (() => {
     meterTextEl = opts.meterTextEl;
     wordsEl = opts.wordsEl;
     mistakesEl = opts.mistakesEl;
+    landmarksEl = opts.landmarksEl;
     hudCallbacks = opts.hudCallbacks || {};
 
     window.addEventListener('resize', () => {
@@ -58,6 +73,40 @@ const GardenGame = (() => {
         renderAll();
       }, 200);
     });
+  }
+
+  // Deterministic pseudo-random in [0,1) — same seed always gives the same
+  // value, so a landmark's position is stable across reloads/resizes
+  // instead of jumping around.
+  function seededRand(seed) {
+    const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+    return x - Math.floor(x);
+  }
+
+  function landmarkPosition(index) {
+    const xPct = 6 + seededRand(index * 2 + 1) * 88;
+    const yPct = 55 + seededRand(index * 2 + 2) * 42;
+    return { xPct, yPct };
+  }
+
+  function addLandmarkEl(index, animate) {
+    const emoji = LANDMARK_POOL[index % LANDMARK_POOL.length];
+    const pos = landmarkPosition(index);
+    const el = document.createElement('div');
+    el.className = 'garden-landmark' + (animate ? ' just-added' : '');
+    el.style.left = pos.xPct + '%';
+    el.style.top = pos.yPct + '%';
+    el.textContent = emoji;
+    landmarksEl.appendChild(el);
+    landmarkEls.push(el);
+  }
+
+  // One landmark per completed garden round — lapsCompleted is persisted,
+  // so this always matches exactly how many the player has earned.
+  function rebuildLandmarks() {
+    landmarksEl.innerHTML = '';
+    landmarkEls = [];
+    for (let i = 0; i < lapsCompleted; i++) addLandmarkEl(i, false);
   }
 
   function buildLayout() {
@@ -82,21 +131,38 @@ const GardenGame = (() => {
       const jitterX = (Math.random() * 2 - 1) * COARSE_CELL * JITTER_RATIO;
       const jitterY = (Math.random() * 2 - 1) * COARSE_CELL * JITTER_RATIO;
 
+      const finalY = centerY + jitterY;
+      // cheap perspective cue: plots lower in the bed read as "closer"
+      // and render a bit bigger, since there's no real 3D here.
+      const depthScale = 0.78 + Math.max(0, Math.min(1, finalY / h)) * 0.55;
+
       const slot = document.createElement('div');
       slot.className = 'garden-slot';
       slot.style.left = (centerX + jitterX) + 'px';
-      slot.style.top = (centerY + jitterY) + 'px';
+      slot.style.top = finalY + 'px';
+      slot.style.setProperty('--depth-scale', depthScale.toFixed(2));
       slot.innerHTML = '<span class="garden-dot"></span><span class="garden-plant"></span>';
       gridEl.appendChild(slot);
       slotEls.push(slot);
     }
 
+    plantOrder = shuffle(Array.from({ length: total }, (_, i) => i));
+
     // Re-fill however many spots were already planted this round (e.g. on
     // resize) so progress isn't lost, just re-laid-out.
     plantedCount = Math.min(prevPlanted, total);
-    for (let i = 0; i < plantedCount; i++) {
-      plantedFlower[i] = BLOOM_PALETTE[i % BLOOM_PALETTE.length];
+    for (let seq = 0; seq < plantedCount; seq++) {
+      const slotIndex = plantOrder[seq];
+      plantedFlower[slotIndex] = BLOOM_PALETTE[(lapsCompleted + seq) % BLOOM_PALETTE.length];
     }
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   function start(wordPoolForStage, savedState) {
@@ -116,6 +182,7 @@ const GardenGame = (() => {
     running = true;
     bannerEl.classList.add('hidden');
     buildLayout();
+    rebuildLandmarks();
     renderAll();
     nextWord();
     updateHud();
@@ -178,11 +245,15 @@ const GardenGame = (() => {
   function completeWord() {
     wordsCompleted++;
     plantOneFlower();
-    if (SFX) SFX.wordComplete();
     if (plantedCount >= slotEls.length) {
       lapsCompleted++;
-      showFullBloomBanner();
-      setTimeout(() => { if (running) startNewRound(); }, 1800);
+      const newEmoji = LANDMARK_POOL[(lapsCompleted - 1) % LANDMARK_POOL.length];
+      addLandmarkEl(landmarkEls.length, true);
+      if (SFX) SFX.landmark();
+      showFullBloomBanner(newEmoji);
+      setTimeout(() => { if (running) startNewRound(); }, 2600);
+    } else if (SFX) {
+      SFX.wordComplete();
     }
     nextWord();
     updateHud();
@@ -190,11 +261,12 @@ const GardenGame = (() => {
 
   function plantOneFlower() {
     if (plantedCount >= slotEls.length) return;
-    const index = plantedCount;
-    const flower = BLOOM_PALETTE[(lapsCompleted + index) % BLOOM_PALETTE.length];
-    plantedFlower[index] = flower;
+    const seq = plantedCount;
+    const slotIndex = plantOrder[seq];
+    const flower = BLOOM_PALETTE[(lapsCompleted + seq) % BLOOM_PALETTE.length];
+    plantedFlower[slotIndex] = flower;
     plantedCount++;
-    renderSlot(index, true);
+    renderSlot(slotIndex, true);
   }
 
   function startNewRound() {
@@ -220,17 +292,24 @@ const GardenGame = (() => {
     if (plantedCount <= 0) return;
     if (SFX) SFX.wither();
     flashWither();
-    const index = plantedCount - 1;
+    const slotIndex = plantOrder[plantedCount - 1];
     plantedCount--;
-    plantedFlower[index] = null;
-    renderSlot(index, false);
+    plantedFlower[slotIndex] = null;
+    renderSlot(slotIndex, false);
   }
 
-  function showFullBloomBanner() {
+  function showFullBloomBanner(emoji) {
     if (SFX) SFX.bloomFull();
-    bannerEl.textContent = `🎉 Garden #${lapsCompleted} complete! A new garden is sprouting...`;
+    const name = LANDMARK_NAMES[emoji] || 'surprise';
+    bannerEl.innerHTML =
+      `🎉✨ Garden #${lapsCompleted} Complete! ✨🎉<br>` +
+      `A new ${name} ${emoji} has joined your garden forever!`;
     bannerEl.classList.remove('hidden');
-    setTimeout(() => bannerEl.classList.add('hidden'), 3000);
+    bannerEl.classList.add('celebrate');
+    setTimeout(() => {
+      bannerEl.classList.add('hidden');
+      bannerEl.classList.remove('celebrate');
+    }, 3400);
   }
 
   function reset() {
