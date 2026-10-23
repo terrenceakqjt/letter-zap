@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Letter Zap! Typing Adventure</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ HOME SCREEN ============ -->
+  <section id="screen-home" class="screen active">
+    <div class="home-card">
+      <h1 class="game-title">⚡ Letter Zap! ⚡</h1>
+      <p class="game-subtitle">A typing adventure for brand-new typists</p>
+      <div class="home-mascot" aria-hidden="true">🤖</div>
+      <div class="home-buttons">
+        <button id="btn-start" class="big-btn primary">▶ Start Playing</button>
+        <button id="btn-map" class="big-btn">🗺 Choose a Level</button>
+        <button id="btn-tutorial" class="big-btn">📖 Home Row Lesson</button>
+      </div>
+      <button id="btn-sound-toggle" class="icon-btn" title="Toggle sound">🔊</button>
+    </div>
+  </section>
+
+  <!-- ============ TUTORIAL SCREEN ============ -->
+  <section id="screen-tutorial" class="screen">
+    <div class="panel">
+      <h2>Meet the Home Row! 🏠</h2>
+      <div id="tutorial-steps"></div>
+      <div class="panel-nav">
+        <button id="tutorial-back" class="big-btn">⬅ Back</button>
+        <button id="tutorial-next" class="big-btn primary">Next ➡</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEVEL MAP SCREEN ============ -->
+  <section id="screen-map" class="screen">
+    <div class="panel wide">
+      <h2>Choose a Level 🗺</h2>
+      <div id="map-list" class="map-list"></div>
+      <button id="map-back" class="big-btn">⬅ Back to Home</button>
+    </div>
+  </section>
+
+  <!-- ============ GAME SCREEN ============ -->
+  <section id="screen-game" class="screen">
+    <div id="hud">
+      <div class="hud-left">
+        <span id="hud-stage-title">Stage</span>
+      </div>
+      <div class="hud-mid">
+        <span id="hud-lives"></span>
+        <label class="speed-control" title="Adjust how fast letters fall">
+          🐢<input type="range" id="speed-slider" min="0.5" max="1.6" step="0.1" value="1">🐇
+        </label>
+      </div>
+      <div class="hud-right">
+        <span id="hud-score">⭐ 0</span>
+        <span id="hud-accuracy">🎯 100%</span>
+        <button id="btn-skip" class="hud-btn" title="Skip to next level">⏭ Skip</button>
+        <button id="btn-pause" class="hud-btn" title="Pause">⏸</button>
+      </div>
+    </div>
+    <div id="gameArea">
+      <div id="cannon">🤖</div>
+      <div id="targetHint"></div>
+    </div>
+  </section>
+
+  <!-- ============ STAGE COMPLETE SCREEN ============ -->
+  <section id="screen-complete" class="screen">
+    <div class="panel">
+      <h2 id="complete-title">Great Job!</h2>
+      <div id="complete-stars" class="stars">⭐⭐⭐</div>
+      <div id="complete-stats"></div>
+      <div class="panel-nav">
+        <button id="complete-retry" class="big-btn">🔁 Retry</button>
+        <button id="complete-next" class="big-btn primary">Next ➡</button>
+        <button id="complete-home" class="big-btn">🏠 Home</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEW KEY INTRO OVERLAY ============ -->
+  <div id="overlay-keyintro" class="overlay hidden">
+    <div class="overlay-card">
+      <h2 id="keyintro-heading">New Key!</h2>
+      <div id="keyintro-diagrams" class="keyintro-diagrams"></div>
+      <p id="keyintro-text"></p>
+      <button id="keyintro-ready" class="big-btn primary">Got it! Let's Go ➡</button>
+    </div>
+  </div>
+
+  <!-- ============ PAUSE OVERLAY ============ -->
+  <div id="overlay-pause" class="overlay hidden">
+    <div class="overlay-card">
+      <h2>Paused ⏸</h2>
+      <button id="pause-resume" class="big-btn primary">▶ Resume</button>
+      <button id="pause-quit" class="big-btn">🏠 Quit to Home</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/fingerMap.js"></script>
+<script src="js/wordlist.js"></script>
+<script src="js/curriculum.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
