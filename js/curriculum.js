@@ -181,15 +181,30 @@ function nextStageOnTrack(trackId, fromIndex) {
   return -1;
 }
 
+// Every key, in the order the lessons teach them.
+const ALL_LETTERS_IN_ORDER = STAGES[STAGES.length - 1].cumulativeLetters;
+const GARDEN_MIN_WORDS = 15;          // never fewer words than this to choose from
+const GARDEN_EXTRA_KEYS_AFTER = 3;    // lessons passed before not-yet-learned keys appear
+const GARDEN_EXTRA_KEYS_PER_LESSON = 1;
+
 /**
- * Word pool matching whatever letters the player has unlocked by the given
- * stage index — used by modes (like the Garden) that want age/skill-
- * appropriate words without being tied to the stage-passing curriculum.
- * Covers every length; the Garden chooses which lengths to draw from.
+ * Words for Garden Mode (every length; the Garden picks lengths itself).
+ * Most players get the whole alphabet. Beginners (limitToLearned) get the
+ * keys they've learned by `stageIndex`; once they've passed a few lessons,
+ * upcoming keys are mixed in one per lesson passed, in teaching order. If the
+ * keys so far spell too few words, the next keys are added until there are
+ * enough.
  */
-function wordPoolForProgress(stageIndex) {
+function gardenWordPool(limitToLearned, stageIndex, lessonsPassed) {
+  if (!limitToLearned) return wordsFor(ALL_LETTERS_IN_ORDER, 2, 12);
   const idx = Math.max(0, Math.min(STAGES.length - 1, stageIndex));
-  const letters = STAGES[idx].cumulativeLetters;
-  if (!letters || letters.length === 0) return wordsFor(HOME_ROW_KEYS, 2, 12);
-  return wordsFor(letters, 2, 12);
+  const learnedCount = STAGES[idx].cumulativeLetters.length;
+  const extraKeys = Math.max(0, lessonsPassed - GARDEN_EXTRA_KEYS_AFTER + 1) * GARDEN_EXTRA_KEYS_PER_LESSON;
+  let count = Math.min(ALL_LETTERS_IN_ORDER.length, learnedCount + extraKeys);
+  let pool = wordsFor(ALL_LETTERS_IN_ORDER.slice(0, count), 2, 12);
+  while (pool.length < GARDEN_MIN_WORDS && count < ALL_LETTERS_IN_ORDER.length) {
+    count++;
+    pool = wordsFor(ALL_LETTERS_IN_ORDER.slice(0, count), 2, 12);
+  }
+  return pool;
 }

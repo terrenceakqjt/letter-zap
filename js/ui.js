@@ -191,7 +191,11 @@ const UI = (() => {
   // ---------------- Garden Mode ----------------
   function enterGarden() {
     showScreen('screen-garden');
-    const pool = wordPoolForProgress(save.unlockedStage);
+    // Beginners who've started the lessons stick to the keys they know (plus a
+    // few upcoming ones as they progress); everyone else gets every key.
+    const lessonsPassed = Object.values(save.stars).filter((n) => n > 0).length;
+    const isBeginner = save.track === 'new' && (save.seenTutorial || lessonsPassed > 0);
+    const pool = gardenWordPool(isBeginner, save.unlockedStage, lessonsPassed);
     GardenGame.start(pool, save.garden);
   }
 
