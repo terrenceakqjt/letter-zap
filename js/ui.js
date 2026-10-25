@@ -12,7 +12,7 @@ const UI = (() => {
   function cache() {
     [
       'screen-home', 'screen-tutorial', 'screen-map', 'screen-game', 'screen-complete', 'screen-garden',
-      'track-buttons', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
+      'track-buttons', 'garden-btn-sub', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
       'tutorial-steps', 'tutorial-back', 'tutorial-next',
       'map-list', 'map-back',
       'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider', 'game-back',
@@ -29,7 +29,7 @@ const UI = (() => {
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
     el[id].classList.add('active');
-    if (id === 'screen-home') renderTrackButtons();
+    if (id === 'screen-home') { renderTrackButtons(); renderGardenButton(); }
   }
 
   function playClick() { if (SFX) SFX.click(); }
@@ -64,6 +64,14 @@ const UI = (() => {
       btn.addEventListener('click', () => { playClick(); startTrack(trackId); });
       el['track-buttons'].appendChild(btn);
     });
+  }
+
+  // Garden button shows the player's garden so far once they've started one
+  function renderGardenButton() {
+    const g = save.garden;
+    el['garden-btn-sub'].textContent = g.wordsCompleted > 0
+      ? `Keep growing: ${g.lapsCompleted} garden${g.lapsCompleted === 1 ? '' : 's'} grown, ${g.wordsCompleted} words typed`
+      : 'Grow a calm little garden, one word at a time';
   }
 
   function startTrack(trackId) {

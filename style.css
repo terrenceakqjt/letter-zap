@@ -68,6 +68,16 @@ html, body {
 .big-btn.track-btn.new { background: linear-gradient(135deg, var(--teal), #38e0c6); }
 .big-btn.track-btn.some { background: linear-gradient(135deg, #f4a93b, var(--yellow)); color: var(--ink); }
 .big-btn.track-btn.fast { background: linear-gradient(135deg, var(--purple), #d08cff); }
+.big-btn.track-btn.garden { width: 100%; background: linear-gradient(135deg, #7f9463, #a7b885); }
+.home-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 12px;
+  font-size: 0.8rem;
+  color: #8a8f99;
+}
+.home-divider::before, .home-divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
 .track-emoji { font-size: 2rem; line-height: 1; }
 .track-label { display: block; font-size: 1.15rem; font-weight: bold; }
 .track-sub { display: block; font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
@@ -561,3 +571,19 @@ html, body {
   font-size: 0.95rem;
 }
 
+
+/* shorter desktop windows (e.g. 1280×720 or a laptop with the dock showing):
+   tighten the home card so all of it fits without scrolling */
+@media (max-height: 860px) {
+  .home-card { padding-block: 20px; }
+  .game-title { font-size: 2.2rem; }
+  .home-mascot { font-size: 3rem; }
+  .game-subtitle { margin: 4px 0 10px; }
+  .track-buttons { gap: 9px; }
+  .big-btn.track-btn { padding-block: 10px; }
+  .home-divider { margin: 10px 0 9px; }
+  .home-extras { margin-top: 12px; }
+}
+@media (max-height: 700px) {
+  .home-mascot { display: none; }
+}
