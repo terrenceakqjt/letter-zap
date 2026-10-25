@@ -164,44 +164,45 @@ const GardenArt = (() => {
 
   function flower(kind, seed) {
     const rand = rng(seed * 97 + 13);
-    const stems = kind === 'allium' ? 1 : 2 + Math.floor(rand() * 2);
+    const stems = kind === 'allium' ? 2 : 3 + Math.floor(rand() * 2);
     let body = '';
     // a couple of leaves at the base
     body += `<path d="M-1,0 q-9,-5 -13,-14 q9,3 13,14 z" fill="${LEAF}"/>`;
     body += `<path d="M1,0 q9,-4 12,-12 q-8,2 -12,12 z" fill="${mix(LEAF, '#4f5e3a', 0.3)}"/>`;
+    body += `<path d="M0,0 q-3,-8 -1,-17 q4,8 1,17 z" fill="${mix(LEAF, '#ffffff', 0.12)}"/>`;
     for (let i = 0; i < stems; i++) {
-      const x0 = (i - (stems - 1) / 2) * 5;
+      const x0 = (i - (stems - 1) / 2) * 6;
       const h = (kind === 'allium' ? 44 : 26) + rand() * 12;
       const hx = x0 + (rand() - 0.5) * 10;
       const hy = -h;
       body += `<path d="M${r1(x0)},0 Q${r1(x0 + (hx - x0) * 0.2)},${r1(hy * 0.5)} ${r1(hx)},${r1(hy)}" stroke="${STEM}" stroke-width="1.6" fill="none"/>`;
       if (kind === 'tulip') {
         const c = ['#c9737c', '#d98f74', '#e0b4a6'][Math.floor(rand() * 3)];
-        body += `<path d="M${r1(hx - 5)},${r1(hy)} q0,-9 5,-11 q5,2 5,11 q-5,3 -10,0 z" fill="${c}"/>`;
-        body += `<path d="M${r1(hx - 1.5)},${r1(hy - 1)} q1,-7 3,-9 q1,5 0,9 z" fill="${mix(c.replace('#', '#'), '#ffffff', 0.25)}"/>`;
+        body += `<path d="M${r1(hx - 6.5)},${r1(hy)} q0,-11 6.5,-14 q6.5,3 6.5,14 q-6.5,4 -13,0 z" fill="${c}"/>`;
+        body += `<path d="M${r1(hx - 2)},${r1(hy - 1)} q1.5,-9 4,-11.5 q1.5,6 0,11.5 z" fill="${mix(c, '#ffffff', 0.25)}"/>`;
       } else if (kind === 'daisy' || kind === 'cosmos') {
         const petal = kind === 'daisy' ? '#f2eee5' : ['#e4aebb', '#d993a5'][Math.floor(rand() * 2)];
-        body += petalRing(hx, hy, 8, 6, 1.9, petal);
-        body += `<circle cx="${r1(hx)}" cy="${r1(hy)}" r="2.2" fill="${kind === 'daisy' ? '#d2a64a' : '#c39a45'}"/>`;
+        body += petalRing(hx, hy, 9, 8, 2.4, petal);
+        body += `<circle cx="${r1(hx)}" cy="${r1(hy)}" r="2.8" fill="${kind === 'daisy' ? '#d2a64a' : '#c39a45'}"/>`;
       } else if (kind === 'poppy') {
         for (let k = 0; k < 5; k++) {
           const a = (k / 5) * Math.PI * 2;
-          body += `<circle cx="${r1(hx + Math.cos(a) * 3)}" cy="${r1(hy + Math.sin(a) * 3)}" r="3.6" fill="${k % 2 ? '#d87b55' : '#c86a49'}"/>`;
+          body += `<circle cx="${r1(hx + Math.cos(a) * 4)}" cy="${r1(hy + Math.sin(a) * 4)}" r="4.6" fill="${k % 2 ? '#d87b55' : '#c86a49'}"/>`;
         }
-        body += `<circle cx="${r1(hx)}" cy="${r1(hy)}" r="1.6" fill="#3e342d"/>`;
+        body += `<circle cx="${r1(hx)}" cy="${r1(hy)}" r="2" fill="#3e342d"/>`;
       } else if (kind === 'lavender') {
-        for (let k = 0; k < 6; k++) {
-          body += `<ellipse cx="${r1(hx + (k % 2 ? 1 : -1))}" cy="${r1(hy + k * 2.4)}" rx="1.9" ry="1.5" fill="${k % 2 ? '#9a8cc1' : '#8575b0'}"/>`;
+        for (let k = 0; k < 8; k++) {
+          body += `<ellipse cx="${r1(hx + (k % 2 ? 1.3 : -1.3))}" cy="${r1(hy + k * 2.6)}" rx="2.6" ry="2" fill="${k % 2 ? '#9a8cc1' : '#8575b0'}"/>`;
         }
       } else if (kind === 'allium') {
-        for (let k = 0; k < 11; k++) {
+        for (let k = 0; k < 16; k++) {
           const a = rand() * Math.PI * 2;
-          const rr = rand() * 5;
-          body += `<circle cx="${r1(hx + Math.cos(a) * rr)}" cy="${r1(hy + Math.sin(a) * rr)}" r="1.9" fill="${mix('#b39bd0', '#8670ab', rand())}"/>`;
+          const rr = rand() * 6.5;
+          body += `<circle cx="${r1(hx + Math.cos(a) * rr)}" cy="${r1(hy + Math.sin(a) * rr)}" r="2.4" fill="${mix('#b39bd0', '#8670ab', rand())}"/>`;
         }
       }
     }
-    return wrap(body, 56, 62, 11);
+    return wrap(body, 64, 66, 14);
   }
 
   // ---------------- landmarks (grid) ----------------

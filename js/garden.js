@@ -72,6 +72,7 @@ const GardenGame = (() => {
   ];
   const GRASS_REWARD_SPOTS = LANDMARKS.length - 5; // keeps the middle of the garden from crowding
   const LANDMARK_SCALE = { big: 1.15, medium: 0.9 };
+  const PLANT_SCALE = 1.45; // flowers need to read clearly at a glance on the soil
   // Later rewards that live outside the grid: little floating islands beside
   // the garden and things drifting in the sky above it. Positions are in
   // board px. After the pedestals fill, rewards alternate between these and
@@ -285,7 +286,7 @@ const GardenGame = (() => {
       const planted = seq < plantedCount;
       tile.el.classList.toggle('next', i === nextIdx);
       if (planted) {
-        tile.objEl.innerHTML = `<span class="iso-art plant${i === justPlantedIdx ? ' just-planted' : ''}">${flowerFor(seq)}</span>`;
+        tile.objEl.innerHTML = `<span class="iso-art plant${i === justPlantedIdx ? ' just-planted' : ''}" style="--s:${PLANT_SCALE}">${flowerFor(seq)}</span>`;
       } else {
         tile.objEl.innerHTML = '<span class="iso-hole"></span>';
       }
