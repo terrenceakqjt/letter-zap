@@ -14,13 +14,13 @@
   <section id="screen-home" class="screen active">
     <div class="home-card">
       <h1 class="game-title">⚡ Letter Zap! ⚡</h1>
-      <p class="game-subtitle">A typing adventure for brand-new typists</p>
       <div class="home-mascot" aria-hidden="true">🤖</div>
-      <div class="home-buttons">
-        <button id="btn-start" class="big-btn primary">▶ Start Playing</button>
-        <button id="btn-map" class="big-btn">🗺 Choose a Level</button>
-        <button id="btn-garden" class="big-btn">🌼 Garden Mode</button>
-        <button id="btn-tutorial" class="big-btn">📖 Home Row Lesson</button>
+      <p class="game-subtitle">How much typing have you done?</p>
+      <div id="track-buttons" class="track-buttons"></div>
+      <div class="home-extras">
+        <button id="btn-map" class="big-btn small">🗺 Choose a Lesson</button>
+        <button id="btn-garden" class="big-btn small">🌼 Garden Mode</button>
+        <button id="btn-tutorial" class="big-btn small">📖 Home Row Lesson</button>
       </div>
       <button id="btn-sound-toggle" class="icon-btn" title="Toggle sound">🔊</button>
     </div>
@@ -41,7 +41,7 @@
   <!-- ============ LEVEL MAP SCREEN ============ -->
   <section id="screen-map" class="screen">
     <div class="panel wide">
-      <h2>Choose a Level 🗺</h2>
+      <h2>Choose a Lesson 🗺</h2>
       <div id="map-list" class="map-list"></div>
       <button id="map-back" class="big-btn">⬅ Back to Home</button>
     </div>
@@ -51,73 +51,25 @@
   <section id="screen-garden" class="screen">
     <div id="garden-hud">
       <div class="hud-left">
-        <button id="garden-back" class="hud-btn">⬅ Home</button>
+        <button id="garden-back" class="hud-btn">← Home</button>
       </div>
       <div class="hud-mid garden-meter-wrap">
+        <span class="garden-stat-label">This garden</span>
         <div class="growth-meter"><div id="garden-meter-fill" class="growth-meter-fill"></div></div>
         <span id="garden-growth-text">0%</span>
       </div>
       <div class="hud-right">
-        <span id="garden-words">🌼 0</span>
-        <span id="garden-mistakes">✋ 0</span>
-        <button id="garden-reset" class="hud-btn">🌱 New Garden</button>
+        <span class="garden-stat"><span class="garden-stat-label">Words</span> <span id="garden-words">0</span></span>
+        <span class="garden-stat"><span class="garden-stat-label">Mistakes</span> <span id="garden-mistakes">0</span></span>
+        <span class="garden-stat garden-acc" title="Accuracy: how many of your key presses were correct"><span class="garden-stat-label">Accuracy</span> <span id="garden-accuracy">—</span>
+          <button id="garden-acc-reset" class="garden-acc-reset" title="Reset accuracy">Reset</button></span>
+        <button id="garden-reset" class="hud-btn">New garden</button>
       </div>
     </div>
     <div id="gardenArea">
-      <div class="garden-sun" aria-hidden="true"></div>
-      <div class="garden-cloud c1" aria-hidden="true">☁️</div>
-      <div class="garden-cloud c2" aria-hidden="true">☁️</div>
-      <div class="garden-vine left" aria-hidden="true">
-        <svg viewBox="0 0 60 600" preserveAspectRatio="none">
-          <rect x="23" y="0" width="14" height="600" rx="7" fill="#b5d98a"/>
-          <rect x="20" y="70" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="170" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="270" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="370" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="470" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="570" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <path d="M30 100 Q 5 85 2 65 Q 25 75 30 100" fill="#8bc34a"/>
-          <path d="M30 100 Q 55 85 58 65 Q 35 75 30 100" fill="#7cb342"/>
-          <path d="M30 300 Q 5 285 2 265 Q 25 275 30 300" fill="#8bc34a"/>
-          <path d="M30 300 Q 55 285 58 265 Q 35 275 30 300" fill="#7cb342"/>
-          <path d="M30 480 Q 5 465 2 445 Q 25 455 30 480" fill="#8bc34a"/>
-          <path d="M30 480 Q 55 465 58 445 Q 35 455 30 480" fill="#7cb342"/>
-        </svg>
-      </div>
-      <div class="garden-vine right" aria-hidden="true">
-        <svg viewBox="0 0 60 600" preserveAspectRatio="none">
-          <rect x="23" y="0" width="14" height="600" rx="7" fill="#b5d98a"/>
-          <rect x="20" y="40" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="140" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="240" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="340" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="440" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <rect x="20" y="540" width="20" height="8" rx="3" fill="#6a9b3f"/>
-          <path d="M30 190 Q 5 175 2 155 Q 25 165 30 190" fill="#8bc34a"/>
-          <path d="M30 190 Q 55 175 58 155 Q 35 165 30 190" fill="#7cb342"/>
-          <path d="M30 390 Q 5 375 2 355 Q 25 365 30 390" fill="#8bc34a"/>
-          <path d="M30 390 Q 55 375 58 355 Q 35 365 30 390" fill="#7cb342"/>
-          <path d="M30 550 Q 5 535 2 515 Q 25 525 30 550" fill="#8bc34a"/>
-          <path d="M30 550 Q 55 535 58 515 Q 35 525 30 550" fill="#7cb342"/>
-        </svg>
-      </div>
-      <div class="garden-deco d1" aria-hidden="true">🦋</div>
-      <div class="garden-deco d2" aria-hidden="true">🐝</div>
-      <div class="garden-deco corner tl" aria-hidden="true">🌸</div>
-      <div class="garden-deco corner tr" aria-hidden="true">🎋</div>
-      <div class="garden-deco corner bl" aria-hidden="true">⛩️</div>
-      <div class="garden-deco corner br" aria-hidden="true">🏮</div>
-      <div class="garden-hedge" aria-hidden="true"></div>
-      <div class="garden-bush b1" aria-hidden="true"></div>
-      <div class="garden-bush b2" aria-hidden="true"></div>
-      <div class="garden-bush b3" aria-hidden="true"></div>
-      <div class="garden-bush b4" aria-hidden="true"></div>
-      <div class="garden-bush b5" aria-hidden="true"></div>
       <div id="gardenBanner" class="garden-banner hidden"></div>
-      <div id="gardenLandmarks" class="garden-landmarks" aria-hidden="true"></div>
-      <div id="gardenGrid" class="garden-grid"></div>
+      <div id="gardenBoard" class="garden-board"></div>
       <div id="gardenPrompt" class="garden-prompt"></div>
-      <div class="garden-fence" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -137,7 +89,7 @@
       <div class="hud-right">
         <span id="hud-score">⭐ 0</span>
         <span id="hud-accuracy">🎯 100%</span>
-        <button id="btn-skip" class="hud-btn" title="Skip to next level">⏭ Skip</button>
+        <button id="btn-skip" class="hud-btn" title="Skip to next lesson">⏭ Skip</button>
         <button id="btn-pause" class="hud-btn" title="Pause">⏸</button>
       </div>
     </div>
@@ -188,6 +140,7 @@
 <script src="js/storage.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/game.js"></script>
+<script src="js/gardenArt.js"></script>
 <script src="js/garden.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>

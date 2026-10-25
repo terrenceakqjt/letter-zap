@@ -61,6 +61,26 @@ const MASTER_WORDS = [
   'balloon','bubble','cookie','pancake','sandwich','popcorn',
   'adventure','treasure','mountain','waterfall','sunshine','firefly',
   'alphabet','computer','keyboard','notebook','backpack',
+  // longer words (7-12 letters) so the longest stages and Garden Mode have variety
+  'bicycle','blanket','cartoon','chicken','cupcake','diamond','dolphin','penguin',
+  'evening','freckle','giraffe','holiday','popcorn','kitchen','lantern','lettuce',
+  'library','mermaid','monster','morning','pajamas','picture','pirates','planets',
+  'pumpkin','rooster','sweater','thunder','unicorn','volcano',
+  'airplane','baseball','birthday','building','crayfish','cucumber','dumpling','flamingo',
+  'football','hedgehog','kangaroo','ladybugs','lemonade','mushroom','pinecone','princess',
+  'pumpkins','raindrop','sailboat','scissors','skeleton','snowball','squirrel','starfish',
+  'sunlight','tortoise','triangle','tricycle','umbrella','vacation','zucchini',
+  'alligator','astronaut','blueberry','bookshelf','bumblebee','chocolate','dandelion','dragonfly',
+  'fireworks','hamburger','jellyfish','lightning','pineapple','porcupine','raspberry','snowflake',
+  'spaceship','sunflower','telescope','treehouse',
+  'basketball','blackberry','chimpanzee','fingernail','flashlight','rainforest','friendship','grapefruit',
+  'lighthouse','motorcycle','nightlight','playground','sandcastle','scarecrows','skateboard','snowflakes',
+  'strawberry','sunglasses','toothbrush','trampoline','watermelon','wonderland','woodpecker',
+  'adventurous','butterflies','caterpillar','dragonflies','firecracker','gingerbread','grasshopper','hummingbird',
+  'marshmallow','peppermints','playgrounds','pomegranate','rattlesnake','thunderbolt','thunderclap','trampolines',
+  'watermelons','wheelbarrow','woodpeckers',
+  'butterscotch','caterpillars','grasshoppers','hummingbirds','kindergarten','marshmallows','snowboarding','storytelling',
+  'strawberries','thunderstorm',
 ];
 
 function uniqueSorted(list) {

@@ -33,6 +33,7 @@ const Game = (() => {
 
   function areaHeight() { return gameAreaEl.clientHeight; }
   function areaWidth() { return gameAreaEl.clientWidth; }
+  function heightScale() { return Math.max(0.75, areaHeight() / 800); }
 
   function weightedKeyPool(st) {
     const main = st.practiceKeys || [];
@@ -196,7 +197,9 @@ const Game = (() => {
     const groundY = areaHeight() - GROUND_Y_OFFSET;
     for (let i = activeItems.length - 1; i >= 0; i--) {
       const it = activeItems[i];
-      it.y += (it.speed * speedMultiplier * dt) / 1000;
+      // speeds are tuned for an 800px-tall play area; scale so a letter takes
+      // the same time to fall on any monitor size
+      it.y += (it.speed * speedMultiplier * heightScale() * dt) / 1000;
       it.el.style.top = it.y + 'px';
       const isDanger = it.y > groundY - 130;
       if (isDanger !== it.danger) {

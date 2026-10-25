@@ -129,15 +129,67 @@ function buildStages() {
 
 const STAGES = buildStages();
 
+/*
+ * Skill tracks chosen on the home screen. Each is an ordered path of stage
+ * ids through STAGES: brand-new typists get every stage, kids who've typed a
+ * little skip the finger-by-finger letter intros, and speed-seekers jump
+ * straight to full-alphabet words.
+ */
+const TRACKS = {
+  new: {
+    label: "I'm new to typing",
+    emoji: '🐣',
+    stageIds: STAGES.map((s) => s.id),
+  },
+  some: {
+    label: "I've typed a little bit",
+    emoji: '🐥',
+    stageIds: [
+      'home-mix', 'words-home-3', 'words-home-4',
+      'top-mix', 'words-top-4', 'words-top-5',
+      'full-mix', 'words-full-3', 'words-full-4', 'words-full-5', 'words-full-6',
+      'endless',
+    ],
+  },
+  fast: {
+    label: 'I want to type faster',
+    emoji: '🚀',
+    stageIds: ['words-full-3', 'words-full-4', 'words-full-5', 'words-full-6', 'endless'],
+  },
+};
+
+function stageIndexById(id) {
+  return STAGES.findIndex((s) => s.id === id);
+}
+
+function trackStartIndex(trackId) {
+  return stageIndexById(TRACKS[trackId].stageIds[0]);
+}
+
+/**
+ * Next stage on a track after the given stage index. Works even when the
+ * current stage isn't on the track (e.g. picked from the level map): it
+ * returns the first track stage that comes later in the curriculum.
+ * Returns -1 when there's nothing after it.
+ */
+function nextStageOnTrack(trackId, fromIndex) {
+  const track = TRACKS[trackId] || TRACKS.new;
+  for (const id of track.stageIds) {
+    const idx = stageIndexById(id);
+    if (idx > fromIndex) return idx;
+  }
+  return -1;
+}
+
 /**
  * Word pool matching whatever letters the player has unlocked by the given
  * stage index — used by modes (like the Garden) that want age/skill-
  * appropriate words without being tied to the stage-passing curriculum.
+ * Covers every length; the Garden chooses which lengths to draw from.
  */
 function wordPoolForProgress(stageIndex) {
   const idx = Math.max(0, Math.min(STAGES.length - 1, stageIndex));
   const letters = STAGES[idx].cumulativeLetters;
-  if (!letters || letters.length === 0) return wordsFor(HOME_ROW_KEYS, 2, 5);
-  const pool = wordsFor(letters, 3, 6);
-  return pool.length ? pool : wordsFor(letters, 2, 8);
+  if (!letters || letters.length === 0) return wordsFor(HOME_ROW_KEYS, 2, 12);
+  return wordsFor(letters, 2, 12);
 }

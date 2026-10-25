@@ -3,6 +3,7 @@
 const UI = (() => {
   let save = null;
   let currentStageIndex = 0;
+  let tutorialThenStage = 0; // stage to launch when the tutorial's last step is done
   let tutStepIndex = 0;
   const TUT_STEP_COUNT = 4;
 
@@ -11,7 +12,7 @@ const UI = (() => {
   function cache() {
     [
       'screen-home', 'screen-tutorial', 'screen-map', 'screen-game', 'screen-complete', 'screen-garden',
-      'btn-start', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
+      'track-buttons', 'btn-map', 'btn-tutorial', 'btn-garden', 'btn-sound-toggle',
       'tutorial-steps', 'tutorial-back', 'tutorial-next',
       'map-list', 'map-back',
       'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider', 'game-back',
@@ -20,17 +21,76 @@ const UI = (() => {
       'complete-retry', 'complete-next', 'complete-home',
       'overlay-keyintro', 'keyintro-heading', 'keyintro-diagrams', 'keyintro-text', 'keyintro-ready',
       'overlay-pause', 'pause-resume', 'pause-quit',
-      'garden-back', 'garden-reset', 'gardenGrid', 'gardenPrompt', 'gardenBanner', 'gardenLandmarks',
-      'garden-meter-fill', 'garden-growth-text', 'garden-words', 'garden-mistakes',
+      'garden-back', 'garden-reset', 'gardenArea', 'gardenBoard', 'gardenPrompt', 'gardenBanner',
+      'garden-meter-fill', 'garden-growth-text', 'garden-words', 'garden-mistakes', 'garden-accuracy', 'garden-acc-reset',
     ].forEach((id) => { el[id] = document.getElementById(id); });
   }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
     el[id].classList.add('active');
+    if (id === 'screen-home') renderTrackButtons();
   }
 
   function playClick() { if (SFX) SFX.click(); }
+
+  // ---------------- Skill tracks (home screen) ----------------
+  const TRACK_BLURBS = {
+    new: 'Learn each key, one finger at a time',
+    some: 'Warm up each row, then type real words',
+    fast: 'Jump right into fast word challenges',
+  };
+
+  // A track resumes at its first stage the player hasn't passed yet (passing
+  // earns stars). Skipped stages stay unpassed, so skipping ahead doesn't
+  // move the saved starting point. Endless never awards stars, so it's
+  // reached once everything before it is passed.
+  function trackResumeIndex(trackId) {
+    const firstUnpassed = TRACKS[trackId].stageIds.find((id) => !save.stars[id]);
+    return firstUnpassed ? stageIndexById(firstUnpassed) : trackStartIndex(trackId);
+  }
+
+  function renderTrackButtons() {
+    el['track-buttons'].innerHTML = '';
+    Object.entries(TRACKS).forEach(([trackId, track]) => {
+      const resumeIdx = trackResumeIndex(trackId);
+      const sub = resumeIdx !== trackStartIndex(trackId)
+        ? `Keep going: ${STAGES[resumeIdx].emoji} ${STAGES[resumeIdx].title}`
+        : TRACK_BLURBS[trackId];
+      const btn = document.createElement('button');
+      btn.className = `big-btn track-btn ${trackId}`;
+      btn.innerHTML = `<span class="track-emoji">${track.emoji}</span>
+        <span><span class="track-label">${track.label}</span><span class="track-sub">${sub}</span></span>`;
+      btn.addEventListener('click', () => { playClick(); startTrack(trackId); });
+      el['track-buttons'].appendChild(btn);
+    });
+  }
+
+  function startTrack(trackId) {
+    save.track = trackId;
+    const idx = trackResumeIndex(trackId);
+    save.unlockedStage = Math.max(save.unlockedStage, idx); // Garden words match the chosen level
+    if (trackId === 'new' && !save.seenTutorial) {
+      save.seenTutorial = true;
+      writeSave(save);
+      openTutorial(idx);
+    } else {
+      writeSave(save);
+      enterStage(idx);
+    }
+  }
+
+  // Moving on to the next stage widens the letters Garden Mode draws words from.
+  function advanceTrack(fromIndex) {
+    const next = nextStageOnTrack(save.track, fromIndex);
+    if (next >= 0) save.unlockedStage = Math.max(save.unlockedStage, next);
+  }
+
+  function openTutorial(thenStage) {
+    tutorialThenStage = thenStage;
+    renderTutorial();
+    showScreen('screen-tutorial');
+  }
 
   // ---------------- Tutorial ----------------
   function keyboardHtml(highlightBumps) {
@@ -116,7 +176,7 @@ const UI = (() => {
 
   function launchStage(stage, index) {
     showScreen('screen-game');
-    el['btn-skip'].style.display = index < STAGES.length - 1 ? 'inline-block' : 'none';
+    el['btn-skip'].style.display = nextStageOnTrack(save.track, index) >= 0 ? 'inline-block' : 'none';
     Game.startStage(stage, index);
   }
 
@@ -154,9 +214,7 @@ const UI = (() => {
 
     if (passed) {
       save.stars[stage.id] = Math.max(save.stars[stage.id] || 0, stars);
-      if (currentStageIndex === save.unlockedStage && currentStageIndex < STAGES.length - 1) {
-        save.unlockedStage = currentStageIndex + 1;
-      }
+      advanceTrack(currentStageIndex);
       if (SFX) SFX.levelUp();
     }
     writeSave(save);
@@ -182,7 +240,7 @@ const UI = (() => {
       Best Combo: ${stats.comboBest} &nbsp;|&nbsp; Missed: ${stats.escapes}
       ${encouragement}`;
 
-    const hasNext = currentStageIndex < STAGES.length - 1;
+    const hasNext = nextStageOnTrack(save.track, currentStageIndex) >= 0;
     el['complete-next'].style.display = passed && hasNext ? 'inline-block' : 'none';
     el['complete-next'].textContent = 'Next ➡';
     showScreen('screen-complete');
@@ -190,31 +248,21 @@ const UI = (() => {
 
   // ---------------- Wiring ----------------
   function wire() {
-    el['btn-start'].addEventListener('click', () => {
-      playClick();
-      if (!save.seenTutorial) {
-        save.seenTutorial = true;
-        writeSave(save);
-        renderTutorial();
-        showScreen('screen-tutorial');
-      } else {
-        enterStage(save.unlockedStage);
-      }
-    });
-
     el['btn-map'].addEventListener('click', () => { playClick(); renderMap(); showScreen('screen-map'); });
-    el['btn-tutorial'].addEventListener('click', () => { playClick(); renderTutorial(); showScreen('screen-tutorial'); });
+    el['btn-tutorial'].addEventListener('click', () => { playClick(); openTutorial(trackResumeIndex(save.track)); });
     el['map-back'].addEventListener('click', () => { playClick(); showScreen('screen-home'); });
 
     el['btn-garden'].addEventListener('click', () => { playClick(); enterGarden(); });
     el['garden-back'].addEventListener('click', () => { playClick(); GardenGame.stop(); showScreen('screen-home'); });
-    el['garden-reset'].addEventListener('click', () => { playClick(); GardenGame.reset(); });
+    // blur after clicking so a later Space/Enter keypress can't re-trigger the button mid-typing
+    el['garden-reset'].addEventListener('click', () => { playClick(); el['garden-reset'].blur(); GardenGame.reset(); });
+    el['garden-acc-reset'].addEventListener('click', () => { playClick(); el['garden-acc-reset'].blur(); GardenGame.resetAccuracy(); });
 
     el['tutorial-back'].addEventListener('click', () => { playClick(); showTutStep(tutStepIndex - 1); });
     el['tutorial-next'].addEventListener('click', () => {
       playClick();
       if (tutStepIndex >= TUT_STEP_COUNT - 1) {
-        enterStage(save.unlockedStage);
+        enterStage(tutorialThenStage);
       } else {
         showTutStep(tutStepIndex + 1);
       }
@@ -246,11 +294,11 @@ const UI = (() => {
     el['btn-skip'].addEventListener('click', () => {
       playClick();
       Game.stop();
-      if (currentStageIndex === save.unlockedStage && currentStageIndex < STAGES.length - 1) {
-        save.unlockedStage = currentStageIndex + 1;
-      }
+      const next = nextStageOnTrack(save.track, currentStageIndex);
+      if (next < 0) return;
+      advanceTrack(currentStageIndex);
       writeSave(save);
-      enterStage(Math.min(currentStageIndex + 1, STAGES.length - 1));
+      enterStage(next);
     });
     el['pause-resume'].addEventListener('click', () => {
       playClick();
@@ -265,7 +313,11 @@ const UI = (() => {
     });
 
     el['complete-retry'].addEventListener('click', () => { playClick(); enterStage(currentStageIndex); });
-    el['complete-next'].addEventListener('click', () => { playClick(); enterStage(currentStageIndex + 1); });
+    el['complete-next'].addEventListener('click', () => {
+      playClick();
+      const next = nextStageOnTrack(save.track, currentStageIndex);
+      if (next >= 0) enterStage(next);
+    });
     el['complete-home'].addEventListener('click', () => { playClick(); showScreen('screen-home'); });
 
     document.addEventListener('keydown', (e) => {
@@ -300,14 +352,15 @@ const UI = (() => {
     });
     Game.setSpeedMultiplier(save.settings.speed);
     GardenGame.init({
-      gridEl: el['gardenGrid'],
+      areaEl: el['gardenArea'],
+      boardEl: el['gardenBoard'],
       promptEl: el['gardenPrompt'],
       bannerEl: el['gardenBanner'],
-      landmarksEl: el['gardenLandmarks'],
       meterFillEl: el['garden-meter-fill'],
       meterTextEl: el['garden-growth-text'],
       wordsEl: el['garden-words'],
       mistakesEl: el['garden-mistakes'],
+      accuracyEl: el['garden-accuracy'],
       hudCallbacks: { onUpdate: updateGardenHud },
     });
     wire();
