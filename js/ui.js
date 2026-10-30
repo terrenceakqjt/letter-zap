@@ -16,7 +16,7 @@ const UI = (() => {
       'tutorial-steps', 'tutorial-back', 'tutorial-next',
       'map-list', 'map-back',
       'hud-stage-title', 'hud-lives', 'hud-score', 'hud-accuracy', 'btn-pause', 'btn-skip', 'speed-slider', 'game-back',
-      'gameArea', 'cannon', 'targetHint',
+      'gameArea', 'chef', 'cat', 'targetHint',
       'complete-title', 'complete-stars', 'complete-stats',
       'complete-retry', 'complete-next', 'complete-home',
       'overlay-keyintro', 'keyintro-heading', 'keyintro-diagrams', 'keyintro-text', 'keyintro-ready',
@@ -114,7 +114,7 @@ const UI = (() => {
       `<div class="tut-step"><p>Feel for the little bumps on the <b>F</b> and <b>J</b> keys. Put your left pointer finger on <b>F</b> and your right pointer finger on <b>J</b>.</p>
         <div class="keyintro-diagrams">${buildHandDiagram('f')}${buildHandDiagram('j')}</div></div>`,
       `<div class="tut-step"><p>Now rest the rest of your fingers right beside them: <b>A S D F</b> for your left hand, and <b>J K L ;</b> for your right hand.</p>${keyboardHtml(true)}</div>`,
-      `<div class="tut-step"><p>Perfect! Every time a new key shows up in the game, we'll show you exactly which finger to use — just like this. Now let's zap some letters! ⚡</p></div>`,
+      `<div class="tut-step"><p>Perfect! Every time a new key shows up in the game, we'll show you exactly which finger to use — just like this. Now let's serve some sushi! 🍣</p></div>`,
     ];
   }
 
@@ -243,13 +243,13 @@ const UI = (() => {
     let encouragement = '';
     if (!passed) {
       encouragement = failedOnLives
-        ? `<p class="complete-msg">You need <b>${neededPct}%</b> accuracy to move on, and you ran out of hearts before finishing. Try zapping each letter as soon as it appears — you're closer than you think! 💪</p>`
+        ? `<p class="complete-msg">You need <b>${neededPct}%</b> accuracy to move on, and you ran out of hearts before finishing. Try serving each plate as soon as it leaves the chef — you're closer than you think! 💪</p>`
         : `<p class="complete-msg">You need <b>${neededPct}%</b> accuracy to move on — you got <b>${gotPct}%</b>. So close! Give it one more try, you've got this! 🌟</p>`;
     }
 
     el['complete-stats'].innerHTML = `
-      Zapped: ${stats.zapped} &nbsp;|&nbsp; Accuracy: ${gotPct}%<br>
-      Best Combo: ${stats.comboBest} &nbsp;|&nbsp; Missed: ${stats.escapes}
+      Served: ${stats.zapped} &nbsp;|&nbsp; Accuracy: ${gotPct}%<br>
+      Best Combo: ${stats.comboBest} &nbsp;|&nbsp; Eaten by cat: ${stats.escapes}
       ${encouragement}`;
 
     const hasNext = nextStageOnTrack(save.track, currentStageIndex) >= 0;
@@ -357,7 +357,8 @@ const UI = (() => {
     el['speed-slider'].value = save.settings.speed;
     Game.init({
       gameAreaEl: el['gameArea'],
-      cannonEl: el['cannon'],
+      chefEl: el['chef'],
+      catEl: el['cat'],
       hintEl: el['targetHint'],
       hudCallbacks: { onUpdate: updateHud },
       onStageEnd,

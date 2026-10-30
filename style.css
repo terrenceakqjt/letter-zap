@@ -222,83 +222,115 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: linear-gradient(to bottom, #bfe8ff 0%, #e8fbff 70%, #cdeccb 100%);
+  background:
+    repeating-linear-gradient(90deg, rgba(120,80,40,0.05) 0 2px, transparent 2px 140px),
+    linear-gradient(to bottom, #f6ecdc 0%, #efdfc6 55%, #e3cba6 100%);
 }
 
-#cannon {
+/* conveyor belt (SVG drawn by game.js) */
+.belt { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.belt path { fill: none; stroke-linejoin: round; }
+.belt-shadow  { stroke: rgba(70,45,20,0.18); stroke-width: 90px; }
+.belt-rail    { stroke: #b9bec6; stroke-width: 88px; }
+.belt-surface { stroke: #474c55; stroke-width: 72px; }
+.belt-slats   { stroke: #5a606a; stroke-width: 72px; stroke-dasharray: 5 20; }
+.belt-line    { stroke: rgba(255,255,255,0.08); stroke-width: 2px; }
+
+#chef, #cat {
   position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 3rem;
+  transform: translate(-50%, -50%);
   z-index: 4;
-  transition: left 0.08s ease;
 }
-#cannon.shake { animation: shake 0.3s ease; }
+#chef { font-size: 3.4rem; }
+#chef.serve { animation: chefServe 0.35s ease; }
+#chef.shake { animation: shake 0.3s ease; }
+@keyframes chefServe { 50% { transform: translate(-40%, -58%) rotate(8deg); } }
 @keyframes shake {
   0%, 100% { margin-left: 0; }
   25% { margin-left: -6px; }
   75% { margin-left: 6px; }
 }
 
-.falling-item {
+#cat { width: 5rem; height: 4rem; }
+.cat-cushion {
+  position: absolute; left: 50%; bottom: 0.1rem; transform: translateX(-50%);
+  width: 5rem; height: 1.6rem; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 35%, #e77d6c, #b9483d);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.12);
+}
+.cat-face { position: absolute; left: 50%; bottom: 0.6rem; transform: translateX(-50%); font-size: 2.8rem; line-height: 1; }
+.cat-face::before { content: '😴'; }
+#cat.awake .cat-face::before { content: '😾'; }
+#cat.awake .cat-face { animation: catYowl 0.5s ease 2; }
+@keyframes catYowl { 25% { transform: translateX(-56%) scale(1.15); } 75% { transform: translateX(-44%) scale(1.15); } }
+.cat-zzz { position: absolute; right: -0.4rem; top: -0.9rem; font-weight: bold; color: #8a7a9a; font-size: 0.9rem; }
+.cat-zzz i, .cat-zzz b { font-style: normal; display: inline-block; animation: zzz 2.4s ease-in-out infinite; }
+.cat-zzz i { font-size: 1.1rem; animation-delay: 0.4s; }
+.cat-zzz b { font-size: 1.3rem; animation-delay: 0.8s; }
+@keyframes zzz { 0%, 100% { opacity: 0.2; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-4px); } }
+#cat.awake .cat-zzz { display: none; }
+.cat-bubble {
+  position: absolute; left: 50%; bottom: 4.3rem; transform: translateX(-50%) scale(0);
+  background: #fff; color: var(--coral); font-weight: bold; font-size: 1rem; white-space: nowrap;
+  padding: 0.3rem 0.7rem; border-radius: 1rem; box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+  transition: transform 0.15s ease;
+}
+#cat.awake .cat-bubble { transform: translateX(-50%) scale(1); }
+
+/* sushi plates */
+.sushi-plate {
+  --rim: #4a7fc1;
   position: absolute;
-  top: -60px;
-  transform: translateX(-50%);
-  background: #fff;
-  border: 3px solid var(--teal);
+  transform: translate(-50%, -50%);
+  width: 3.8rem;
+  height: 3.8rem;
   border-radius: 50%;
-  width: 3rem;
-  height: 3rem;
+  background: radial-gradient(circle, #fffdf8 0 58%, var(--rim) 60% 72%, #fffdf8 74%);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
   z-index: 3;
 }
-.falling-item.word {
-  border-radius: 14px;
+.plate-red   { --rim: #d0564a; }
+.plate-green { --rim: #4f9a6b; }
+.plate-gold  { --rim: #d6a23a; }
+.plate-plum  { --rim: #9a5fa8; }
+.sushi-plate .sushi {
+  position: absolute; top: -1.25rem; left: 50%; transform: translateX(-50%);
+  font-size: 1.9rem; line-height: 1; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.15));
+}
+.sushi-plate .label { font-size: 1.6rem; color: var(--ink); position: relative; top: 0.12rem; }
+.sushi-plate.word {
   width: auto;
-  min-width: 3.9rem;
-  height: 2.55rem;
-  padding: 0 10px;
-  font-size: 1.2rem;
-  letter-spacing: 1px;
+  min-width: 4.6rem;
+  height: 2.9rem;
+  padding: 0 0.9rem;
+  border-radius: 1.4rem;
+  background: #fffdf8;
+  border: 0.3rem solid var(--rim);
 }
-.falling-item .typed { color: var(--teal); }
-.falling-item .remaining { color: var(--ink); }
-.falling-item.danger { border-color: var(--coral); animation: pulse 0.5s infinite; }
-@keyframes pulse { 0%,100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.06); } }
-
-.laser {
-  position: absolute;
-  bottom: 60px;
-  width: 6px;
-  background: linear-gradient(to top, var(--yellow), #fff);
-  border-radius: 3px;
-  z-index: 4;
-  transform-origin: bottom center;
-  box-shadow: 0 0 10px var(--yellow);
-}
+.sushi-plate.word .label { font-size: 1.3rem; letter-spacing: 1px; top: 0.05rem; }
+.sushi-plate .typed { color: var(--teal); }
+.sushi-plate .remaining { color: var(--ink); }
+.sushi-plate.danger { animation: wobble 0.45s infinite; }
+.sushi-plate.danger .label { color: var(--coral); }
+@keyframes wobble { 0%,100% { transform: translate(-50%, -50%) rotate(0); } 25% { transform: translate(-50%, -50%) rotate(-7deg); } 75% { transform: translate(-50%, -50%) rotate(7deg); } }
+.sushi-plate.served { animation: served 0.42s ease forwards; z-index: 4; }
+@keyframes served { to { transform: translate(-50%, -150%) scale(1.25); opacity: 0; } }
+.sushi-plate.eaten { animation: eaten 0.38s ease-in forwards; }
+@keyframes eaten { to { transform: translate(40%, -50%) scale(0.2); opacity: 0; } }
 
 .particle {
   position: absolute;
   width: 8px;
   height: 8px;
+  margin: -4px 0 0 -4px;
   border-radius: 50%;
   background: var(--yellow);
   z-index: 4;
 }
-
-.escape-poof {
-  position: absolute;
-  font-size: 1.6rem;
-  z-index: 4;
-  animation: poof 0.5s ease forwards;
-}
-@keyframes poof { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-20px) scale(1.6); } }
 
 /* ---------- Garden Mode ----------
    A calmer, more grown-up look than the rest of the game: muted palette,
@@ -524,7 +556,7 @@ html, body {
 
 #targetHint {
   position: absolute;
-  bottom: 70px;
+  top: 4.4rem;
   left: 50%;
   transform: translateX(-50%);
   font-size: 1.4rem;
