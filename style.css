@@ -55,7 +55,7 @@ html, body {
 }
 .game-title { font-size: 2.6rem; margin: 0 0 4px; color: var(--purple); text-shadow: 2px 2px 0 rgba(0,0,0,0.08); }
 .home-mascot { font-size: 4.5rem; animation: bob 2s ease-in-out infinite; }
-.home-mascot .mascot-cat { position: static; transform: none; display: block; margin: 0 auto; width: 8rem; }
+.home-mascot .mascot-cat { position: static; transform: none; display: block; margin: 0.4rem auto 0; width: 8rem; height: 5.6rem; }
 @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 .game-subtitle { font-size: 1.15rem; font-weight: bold; color: var(--ink); margin: 8px 0 12px; }
 .track-buttons { display: flex; flex-direction: column; gap: 12px; }
@@ -699,7 +699,7 @@ html, body {
   .home-card { padding-block: 20px; }
   .game-title { font-size: 2.2rem; }
   .home-mascot { font-size: 3rem; }
-  .home-mascot .mascot-cat { width: 5.5rem; }
+  .home-mascot .mascot-cat { width: 5.5rem; height: 3.85rem; }
   .game-subtitle { margin: 4px 0 10px; }
   .track-buttons { gap: 9px; }
   .big-btn.track-btn { padding-block: 10px; }
