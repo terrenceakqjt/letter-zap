@@ -321,26 +321,44 @@ html, body {
   75% { margin-left: 6px; }
 }
 
-#cat { width: 5rem; height: 4rem; }
+#cat { width: 7.2rem; height: 5.4rem; }
 .cat-cushion {
   position: absolute; left: 50%; bottom: 0.1rem; transform: translateX(-50%);
-  width: 5rem; height: 1.6rem; border-radius: 50%;
+  width: 7.6rem; height: 1.9rem; border-radius: 50%;
   background: radial-gradient(ellipse at 50% 35%, #e77d6c, #b9483d);
   box-shadow: 0 4px 0 rgba(0,0,0,0.12);
 }
-.cat-face { position: absolute; left: 50%; bottom: 0.6rem; transform: translateX(-50%); font-size: 2.8rem; line-height: 1; }
-.cat-face::before { content: '😴'; }
-#cat.awake .cat-face::before { content: '😾'; }
-#cat.awake .cat-face { animation: catYowl 0.5s ease 2; }
-@keyframes catYowl { 25% { transform: translateX(-56%) scale(1.15); } 75% { transform: translateX(-44%) scale(1.15); } }
-.cat-zzz { position: absolute; right: -0.4rem; top: -0.9rem; font-weight: bold; color: #8a7a9a; font-size: 0.9rem; }
+.cat-art { position: absolute; left: 50%; bottom: 0.35rem; transform: translateX(-50%); width: 7.2rem; overflow: visible; }
+.cat-art path, .cat-art ellipse, .cat-art circle { stroke-linecap: round; stroke-linejoin: round; }
+.cat-body, .cat-face-fur { fill: #e9a35b; stroke: #8c5523; stroke-width: 1.5; }
+.cat-tail { fill: none; stroke: #e9a35b; stroke-width: 9; }
+.cat-belly { fill: #f7dcb4; }
+.cat-ear { fill: #e9a35b; stroke: #8c5523; stroke-width: 1.5; }
+.cat-ear-in { fill: #f3a9a0; }
+.cat-stripe { fill: none; stroke: #c27632; stroke-width: 2.5; }
+.eyes-closed path { fill: none; stroke: #3a2a1f; stroke-width: 1.8; }
+.eyes-open circle { fill: #f4e27a; stroke: #3a2a1f; stroke-width: 1.2; }
+.eyes-open .pupil { fill: #2a1d14; }
+.cat-nose { fill: #e47b86; }
+.cat-mouth { fill: #6b2a2a; stroke: #3a2a1f; stroke-width: 1; }
+.cat-whisker { fill: none; stroke: #6d4a2e; stroke-width: 0.8; opacity: 0.7; }
+.cat-head { transition: transform 0.15s ease; transform-origin: 30px 60px; }
+.eyes-open, .cat-mouth { display: none; }
+#cat.awake .eyes-closed { display: none; }
+#cat.awake .eyes-open, #cat.awake .cat-mouth { display: inline; }
+#cat.awake .cat-head { transform: translate(-2px, -14px) rotate(-6deg); }
+#cat.awake .cat-art { animation: catYowl 0.5s ease 2; }
+#cat:not(.awake) .cat-art { animation: catBreathe 3s ease-in-out infinite; }
+@keyframes catYowl { 25% { transform: translateX(-56%) scale(1.1); } 75% { transform: translateX(-44%) scale(1.1); } }
+@keyframes catBreathe { 50% { transform: translateX(-50%) scaleY(1.04); } }
+.cat-zzz { position: absolute; left: 0.2rem; top: -0.6rem; font-weight: bold; color: #8a7a9a; font-size: 0.9rem; }
 .cat-zzz i, .cat-zzz b { font-style: normal; display: inline-block; animation: zzz 2.4s ease-in-out infinite; }
 .cat-zzz i { font-size: 1.1rem; animation-delay: 0.4s; }
 .cat-zzz b { font-size: 1.3rem; animation-delay: 0.8s; }
 @keyframes zzz { 0%, 100% { opacity: 0.2; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-4px); } }
 #cat.awake .cat-zzz { display: none; }
 .cat-bubble {
-  position: absolute; left: 50%; bottom: 4.3rem; transform: translateX(-50%) scale(0);
+  position: absolute; left: 50%; bottom: 6.3rem; transform: translateX(-50%) scale(0);
   background: #fff; color: var(--coral); font-weight: bold; font-size: 1rem; white-space: nowrap;
   padding: 0.3rem 0.7rem; border-radius: 1rem; box-shadow: 0 3px 0 rgba(0,0,0,0.1);
   transition: transform 0.15s ease;
