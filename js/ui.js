@@ -128,7 +128,7 @@ const UI = (() => {
     const steps = el['tutorial-steps'].querySelectorAll('.tut-step');
     steps.forEach((s, idx) => s.classList.toggle('active', idx === tutStepIndex));
     el['tutorial-back'].style.visibility = tutStepIndex === 0 ? 'hidden' : 'visible';
-    el['tutorial-next'].textContent = tutStepIndex === TUT_STEP_COUNT - 1 ? "Let's Play! ⚡" : 'Next ➡';
+    el['tutorial-next'].textContent = tutStepIndex === TUT_STEP_COUNT - 1 ? "Let's Play! 🍣" : 'Next ➡';
   }
 
   // ---------------- Level map ----------------

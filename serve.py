@@ -1,4 +1,4 @@
-"""Local dev server for Letter Zap!  Run:  python3 serve.py  then open http://localhost:8000
+"""Local dev server for Keyboard Café  Run:  python3 serve.py  then open http://localhost:8000
 
 Same as `python3 -m http.server`, but tells the browser not to cache files,
 so a normal refresh always picks up the latest HTML/CSS/JS.
@@ -17,5 +17,5 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-print(f"Letter Zap! running at http://localhost:{PORT}  (Ctrl+C to stop)")
+print(f"Keyboard Café running at http://localhost:{PORT}  (Ctrl+C to stop)")
 http.server.ThreadingHTTPServer(("", PORT), NoCacheHandler).serve_forever()
