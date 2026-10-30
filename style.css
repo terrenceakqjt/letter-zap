@@ -218,30 +218,100 @@ html, body {
 .hud-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.12); }
 
 #gameArea {
+  --belt-y: 58%;
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background:
-    repeating-linear-gradient(90deg, rgba(120,80,40,0.05) 0 2px, transparent 2px 140px),
-    linear-gradient(to bottom, #f6ecdc 0%, #efdfc6 55%, #e3cba6 100%);
+  background: #f3e6d0;
 }
+
+/* restaurant backdrop: plaster wall, noren curtain, lanterns, menu tags,
+   shelves, and a wooden counter under the belt */
+.restaurant { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.restaurant::before { /* wall: plaster above, wood wainscot near the belt */
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom, transparent calc(var(--belt-y) - 110px), #c79a63 calc(var(--belt-y) - 110px), #b5864f calc(var(--belt-y) - 50px)),
+    repeating-linear-gradient(90deg, rgba(110,70,30,0.05) 0 2px, transparent 2px 120px),
+    linear-gradient(to bottom, #f7ecda, #efdfc4);
+}
+.noren {
+  position: absolute; top: 3.3rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 0.35rem;
+}
+.noren::before { /* curtain rod */
+  content: ''; position: absolute; top: -0.35rem; left: -1rem; right: -1rem; height: 0.4rem;
+  background: #7a5130; border-radius: 0.2rem;
+}
+.noren span {
+  width: 6.5rem; height: 5.5rem; background: #2f4a6e; border-radius: 0 0 0.3rem 0.3rem;
+  box-shadow: inset 0 -0.35rem 0 rgba(0,0,0,0.15);
+}
+.noren span:nth-child(3) {
+  background: radial-gradient(circle at 50% 48%, #f4ead8 0 1.3rem, transparent 1.35rem), #2f4a6e;
+}
+.lantern {
+  position: absolute; top: 3.5rem; width: 3.6rem; height: 4.6rem; border-radius: 45%;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 0.6rem, rgba(0,0,0,0.12) 0.6rem 0.68rem),
+    radial-gradient(circle at 40% 40%, #ef7a5f, #c2412f);
+  box-shadow: 0 0 2.2rem rgba(240,140,90,0.45);
+}
+.lantern::before, .lantern::after {
+  content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+  width: 1.8rem; height: 0.5rem; background: #3a2a1f; border-radius: 0.15rem;
+}
+.lantern::before { top: -0.3rem; }
+.lantern::after { bottom: -0.3rem; }
+.lantern.l1 { left: 9%; }
+.lantern.l2 { right: 9%; }
+.menu-boards {
+  position: absolute; top: calc(var(--belt-y) - 15.5rem); left: 50%; transform: translateX(-50%);
+  display: flex; gap: 0.7rem;
+}
+.menu-tag {
+  width: 3.3rem; padding: 0.45rem 0 0.35rem; background: #fbf5ea; border: 0.2rem solid #8a5a32;
+  border-radius: 0.3rem; text-align: center; font-size: 1.5rem; line-height: 1.2;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+}
+.menu-tag b { display: block; font-size: 0.75rem; color: #8a5a32; }
+.menu-tag b::before { content: '¥'; }
+.shelf {
+  position: absolute; top: calc(var(--belt-y) - 12.8rem); display: flex; gap: 0.9rem;
+  font-size: 1.8rem; padding: 0 0.8rem; border-bottom: 0.45rem solid #8a5a32;
+}
+.shelf.s1 { left: 6%; }
+.shelf.s2 { right: 6%; }
+.counter {
+  position: absolute; left: 0; right: 0; bottom: 0; top: calc(var(--belt-y) + 48px);
+  background:
+    linear-gradient(to bottom, #a8743f 0 0.7rem, #c08b55 0.7rem),
+    #c08b55;
+  border-top: 0.25rem solid #8a5a32;
+  display: flex; justify-content: space-around; align-items: flex-start; padding-top: 2.4rem;
+}
+.counter::after { /* wood grain */
+  content: ''; position: absolute; inset: 0.7rem 0 0;
+  background: repeating-linear-gradient(to bottom, transparent 0 1.1rem, rgba(90,55,25,0.08) 1.1rem 1.2rem);
+}
+.place-setting { position: relative; z-index: 1; display: flex; align-items: center; gap: 0.6rem; font-size: 1.9rem; opacity: 0.92; }
+.place-setting .sticks { transform: rotate(-20deg); }
 
 /* conveyor belt (SVG drawn by game.js) */
 .belt { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-.belt path { fill: none; stroke-linejoin: round; }
-.belt-shadow  { stroke: rgba(70,45,20,0.18); stroke-width: 90px; }
-.belt-rail    { stroke: #b9bec6; stroke-width: 88px; }
-.belt-surface { stroke: #474c55; stroke-width: 72px; }
-.belt-slats   { stroke: #5a606a; stroke-width: 72px; stroke-dasharray: 5 20; }
-.belt-line    { stroke: rgba(255,255,255,0.08); stroke-width: 2px; }
+.belt path { fill: none; stroke-linecap: butt; }
+.belt-shadow  { stroke: rgba(70,45,20,0.25); stroke-width: 92px; }
+.belt-rail    { stroke: #b9bec6; stroke-width: 92px; }
+.belt-surface { stroke: #474c55; stroke-width: 74px; }
+.belt-slats   { stroke: #5a606a; stroke-width: 74px; stroke-dasharray: 5 22; }
 
 #chef, #cat {
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: 4;
 }
-#chef { font-size: 3.4rem; }
+#chef { font-size: 4.6rem; }
 #chef.serve { animation: chefServe 0.35s ease; }
 #chef.shake { animation: shake 0.3s ease; }
 @keyframes chefServe { 50% { transform: translate(-40%, -58%) rotate(8deg); } }

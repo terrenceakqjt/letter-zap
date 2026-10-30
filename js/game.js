@@ -49,65 +49,41 @@ const Game = (() => {
   function areaWidth() { return gameAreaEl.clientWidth; }
 
   /* ---------- belt geometry ----------
-     An S-shaped belt: three lanes joined by two U-turns. The chef stands at
-     the top-left start, the cat sleeps at the bottom-right end. */
+     One straight belt across the restaurant counter: the chef sets plates
+     down at the left end, the cat naps at the far right end. */
   function layout() {
     const w = areaWidth();
     const h = areaHeight();
-    const top = 130;
-    const bottom = h - 70;
-    const r = Math.max(60, (bottom - top) / 4);
-    const x0 = r + 80;
-    const x1 = w - r - 80;
-    const y1 = top, y2 = top + 2 * r, y3 = top + 4 * r;
-    const lane = Math.max(100, x1 - x0);
-    const arc = Math.PI * r;
-    path = { x0, x1: x0 + lane, y1, y2, y3, r, lane, arc, length: 3 * lane + 2 * arc };
+    const y = Math.round(h * 0.58);
+    const x0 = 170;
+    const x1 = Math.max(x0 + 300, w - 170);
+    path = { x0, x1, y, length: x1 - x0 };
+    gameAreaEl.style.setProperty('--belt-y', y + 'px');
 
-    const d = `M ${x0} ${y1} L ${path.x1} ${y1} A ${r} ${r} 0 0 1 ${path.x1} ${y2} `
-      + `L ${x0} ${y2} A ${r} ${r} 0 0 0 ${x0} ${y3} L ${path.x1} ${y3}`;
+    const d = `M ${x0 - 40} ${y} L ${x1 + 40} ${y}`;
     let svg = gameAreaEl.querySelector('.belt');
     if (!svg) {
       svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('class', 'belt');
-      gameAreaEl.prepend(svg);
+      gameAreaEl.querySelector('.restaurant').after(svg);
     }
     svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
     svg.innerHTML = `
-      <path class="belt-shadow" d="${d}" transform="translate(0 6)"/>
+      <path class="belt-shadow" d="${d}" transform="translate(0 8)"/>
       <path class="belt-rail" d="${d}"/>
       <path class="belt-surface" d="${d}"/>
-      <path class="belt-slats" d="${d}"/>
-      <path class="belt-line" d="${d}"/>`;
+      <path class="belt-slats" d="${d}"/>`;
     beltSlatsEl = svg.querySelector('.belt-slats');
 
-    const start = pointAt(0);
-    const end = pointAt(1);
-    chefEl.style.left = start.x - 62 + 'px';
-    chefEl.style.top = start.y + 'px';
-    catEl.style.left = end.x + 66 + 'px';
-    catEl.style.top = end.y + 'px';
+    chefEl.style.left = x0 - 95 + 'px';
+    chefEl.style.top = y - 50 + 'px';
+    catEl.style.left = x1 + 105 + 'px';
+    catEl.style.top = y - 6 + 'px';
     activeItems.forEach(placeItem);
   }
 
   function pointAt(t) {
-    const p = path;
-    let d = Math.max(0, Math.min(1, t)) * p.length;
-    if (d <= p.lane) return { x: p.x0 + d, y: p.y1 };
-    d -= p.lane;
-    if (d <= p.arc) {
-      const a = -Math.PI / 2 + d / p.r;
-      return { x: p.x1 + p.r * Math.cos(a), y: p.y1 + p.r + p.r * Math.sin(a) };
-    }
-    d -= p.arc;
-    if (d <= p.lane) return { x: p.x1 - d, y: p.y2 };
-    d -= p.lane;
-    if (d <= p.arc) {
-      const a = -Math.PI / 2 - d / p.r;
-      return { x: p.x0 + p.r * Math.cos(a), y: p.y2 + p.r + p.r * Math.sin(a) };
-    }
-    d -= p.arc;
-    return { x: p.x0 + d, y: p.y3 };
+    return { x: path.x0 + Math.max(0, Math.min(1, t)) * path.length, y: path.y };
   }
 
   function placeItem(it) {
@@ -260,7 +236,7 @@ const Game = (() => {
   function beltHasRoom() {
     const last = activeItems[activeItems.length - 1];
     if (!last) return true;
-    return last.t * path.length > last.el.offsetWidth + 70 + PLATE_GAP;
+    return last.t * path.length > last.el.offsetWidth + PLATE_GAP;
   }
 
   function spawnItem(text) {
